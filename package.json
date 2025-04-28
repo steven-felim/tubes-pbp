@@ -15,17 +15,9 @@
     "pg": "^8.15.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-<<<<<<< HEAD
     "sequelize": "^6.37.7",
     "sequelize-cli": "^6.6.2",
     "sequelize-typescript": "^2.1.6"
-=======
-    "reflect-metadata": "^0.2.2",
-    "sequelize": "^6.37.7",
-    "sequelize-cli": "^6.6.2",
-    "sequelize-typescript": "^2.1.6",
-    "uuid": "^11.1.0"
->>>>>>> b4490d0fb75e2225118b1f43853d3a3f8232c7bb
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
