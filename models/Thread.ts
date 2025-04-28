@@ -1,5 +1,7 @@
-import { Column, DataType, Model, Table } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, Model, Table } from "sequelize-typescript";
 import { v4 as uuidv4 } from "uuid";
+import { User } from "./User";
+import { Category } from "./Category";
 
 @Table({
     tableName: "Thread",
@@ -19,6 +21,9 @@ export class Thread extends Model {
     })
     declare userId: string;
 
+    @BelongsTo(() => User)
+    declare user: User;
+
     @Column({
         allowNull: false,
         type: DataType.STRING,
@@ -36,6 +41,9 @@ export class Thread extends Model {
         type: DataType.STRING,
     })
     declare categoryId: string;
+
+    @BelongsTo(() => Category)
+    declare category: Category;
 
     @Column({
         allowNull: false,

@@ -1,5 +1,6 @@
-import { Column, DataType, Model, Table } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, Model, Table } from "sequelize-typescript";
 import { v4 as uuidv4 } from "uuid";
+import { User } from "./User";
 
 @Table({
     tableName: "Session",
@@ -19,6 +20,9 @@ export class Session extends Model {
     allowNull: false,
   })
   declare userId: string;
+
+  @BelongsTo(() => User)
+  declare user: User;
 
   @Column({
     type: DataType.DATE,
