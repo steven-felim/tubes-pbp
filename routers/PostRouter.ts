@@ -54,24 +54,3 @@ postRouter.delete("/:id", async (req, res) => {
         res.status(400).json({ error: (error as Error).message });
     }
 });
-
-
-postRouter.put("/:id", async (req, res) => {
-  const record = await Post.findByPk(req.params.id);
-  if (!record) {
-    res.status(404).json({ error: "Post not found" });
-    return;
-  }
-  await record.update(req.body);
-  res.status(200).json(record);
-});
-
-postRouter.delete("/:id", async (req, res) => {
-  const record = await Post.findByPk(req.params.id);
-  if (!record) {
-    res.status(404).json({ error: "Post not found" });
-    return;
-  }
-  await record.destroy();
-  res.status(200).send();
-});
