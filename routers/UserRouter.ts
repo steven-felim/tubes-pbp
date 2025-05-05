@@ -1,60 +1,68 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import { User } from "../models/User";
-import { Op } from "sequelize";
 import { authenticate } from "../controller/Authorization";
 
 export const userRouter = express.Router();
 
-// Get my own profile
-userRouter.get("/me", authenticate, async (req, res) => {
+userRouter.get("/me", authenticate , async (req: Request & { user?: { id: string } }, res: Response): Promise<void> => {
     try {
+        if (!req.user || !req.user.id) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+        if (!req.user || !req.user.id) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
         const user = await User.findByPk(req.user.id);
         if (!user) {
-            return res.status(404).json({ error: "User not found" });
+            res.status(404).json({ error: "User not found" });
+            return;
         }
         res.json(user);
-    } catch (error) {
+    } catch {
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
-// Get other people's profile
-userRouter.get("/:id", authenticate, async (req, res) => {
+
+userRouter.get("/:id", authenticate , async (req: Request & { user?: { id: string } }, res: Response): Promise<void> => {
     try {
         const user = await User.findByPk(req.params.id);
         if (!user) {
-            return res.status(404).json({ error: "User not found" });
+            res.status(404).json({ error: "User not found" });
         }
         res.json(user);
-    } catch (error) {
+    } catch {
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
-// Edit my own profile
-userRouter.put("/me", authenticate, async (req, res) => {
+userRouter.put("/me", authenticate, async (req: Request & { user?: { id: string } }, res: Response): Promise<void> => {
     try {
-        const user = await User.findByPk(req.user.id);
+        const user = await User.findByPk(req.params.id);
         if (!user) {
-            return res.status(404).json({ error: "User not found" });
+            res.status(404).json({ error: "User not found" });
+            return;
         }
-        await user.update(req.body);
+        const { username, bio } = req.body;
+        await user.update({ username, bio });
         res.json(user);
-    } catch (error) {
+    } catch {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
-// Delete my own user
-userRouter.delete("/me", authenticate, async (req, res) => {
+    
+userRouter.delete("/me", authenticate, async (req: Request & { user?: { id: string } }, res: Response): Promise<void> => {
     try {
-        const user = await User.findByPk(req.user.id);
+        const user = await User.findByPk(req.params.id);
         if (!user) {
-            return res.status(404).json({ error: "User not found" });
+            res.status(404).json({ error: "User not found" });
+            return;
         }
         await user.destroy();
         res.status(204).send();
-    } catch (error) {
+    } catch {
         res.status(500).json({ error: "Internal server error" });
     }
 });
