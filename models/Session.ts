@@ -21,7 +21,7 @@ export class Session extends Model {
   })
   declare userId: string;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, "userId")
   declare user: User;
 
   @Column({

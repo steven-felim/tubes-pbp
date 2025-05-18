@@ -18,7 +18,7 @@ export class User extends Model {
         unique: true,
         type: DataType.STRING,
     })
-    declare username: string;
+    declare name: string;
 
     @Column({
         allowNull: false,

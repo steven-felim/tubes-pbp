@@ -21,7 +21,7 @@ export class Thread extends Model {
     })
     declare userId: string;
 
-    @BelongsTo(() => User)
+    @BelongsTo(() => User, "userId")
     declare user: User;
 
     @Column({
@@ -42,7 +42,7 @@ export class Thread extends Model {
     })
     declare categoryId: string;
 
-    @BelongsTo(() => Category)
+    @BelongsTo(() => Category, "categoryId")
     declare category: Category;
 
     @Column({
