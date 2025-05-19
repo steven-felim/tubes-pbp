@@ -32,18 +32,4 @@ export class User extends Model {
         type: DataType.STRING,
     })
     declare password: string;
-
-    @Column({
-        allowNull: false,
-        type: DataType.DATE,
-        defaultValue: DataType.NOW,
-    })
-    declare createdAt: Date;
-
-    @Column({
-        allowNull: false,
-        type: DataType.DATE,
-        defaultValue: DataType.NOW,
-    })
-    declare updatedAt: Date;
 }
