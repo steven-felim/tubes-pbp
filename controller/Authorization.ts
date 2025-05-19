@@ -21,7 +21,7 @@ export async function login(req: Request & { body: { userId: string } }, res: Re
   res.json({ sessionId }); 
 }
 
-export async function authorizationMiddleware(
+export async function authenticate(
     req: Request,
     res: Response,
     next: NextFunction
