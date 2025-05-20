@@ -18,10 +18,4 @@ export class Category extends Model {
     allowNull: false,
   })
   declare name: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  declare description: string;
 }
