@@ -6,7 +6,7 @@ import { authorizationMiddleware } from "../middlewares/authorizationMiddleware"
 
 export const authRouter = Router();
 
-authRouter.post("/session/register", (req, res, next) => {
+authRouter.post("/signup", (req, res, next) => {
   const { name, email, password } = req.body;
   const existingUser = users.find((user) => user.email === email);
 
@@ -25,7 +25,7 @@ authRouter.post("/session/register", (req, res, next) => {
   res.status(201).json(newUser);
 });
 
-authRouter.post("/session/login", async (req, res, next) => {
+authRouter.post("/signin", async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = users.find(
@@ -54,7 +54,7 @@ authRouter.post("/session/login", async (req, res, next) => {
   }
 });
 
-authRouter.post("/session/logout", async (req, res) => {
+authRouter.post("/signout", async (req, res) => {
   const sessionId = req.cookies.sessionId;
 
   if (sessionId) {
@@ -65,7 +65,7 @@ authRouter.post("/session/logout", async (req, res) => {
   res.status(200).json({ message: "Logout successful" });
 });
 
-authRouter.get("/session/me", authorizationMiddleware, (req, res, next) => {
+authRouter.get("/me", authorizationMiddleware, (req, res, next) => {
   res.status(200).json(res.locals.user.user);
   next();
 });

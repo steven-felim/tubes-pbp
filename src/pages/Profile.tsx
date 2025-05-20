@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const EditProfile = () => {
   const [username, setUsername] = useState("");
@@ -13,6 +14,24 @@ const EditProfile = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
+      {/* Navbar */}
+      <nav className="bg-gray-800 shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <Link to="/" className="text-white text-xl font-semibold">
+                ForumKode
+              </Link>
+            </div>
+            <div className="flex space-x-4">
+              <Link to="/ask" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Ask Question</Link>
+              <Link to="/about" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">About</Link>
+              <Link to="/me" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Profile</Link>
+            </div>
+          </div>
+        </div>
+      </nav>
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h2 className="text-3xl font-bold text-center text-gray-900 mb-6">Edit Profile</h2>
         <form onSubmit={handleSubmit}>

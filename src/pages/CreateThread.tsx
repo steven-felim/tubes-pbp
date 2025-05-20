@@ -5,32 +5,55 @@ const CreateThread = () => {
   const [threadTitle, setThreadTitle] = useState("");
   const [threadContent, setThreadContent] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [newCategory, setNewCategory] = useState("");
 
-  const categories = ["Web Development", "Data Science", "Mobile Development", "DevOps"]; // Categories can be fetched from the backend
+  const categories = ["General", "Web Development", "Data Science", "Mobile Development", "DevOps"];
 
-interface CategoryChangeHandler {
-    (category: string): void;
-}
-
-const handleCategoryChange: CategoryChangeHandler = (category) => {
-    setSelectedCategories((prevCategories) =>
-        prevCategories.includes(category)
-            ? prevCategories.filter((cat) => cat !== category)
-            : [...prevCategories, category]
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((cat) => cat !== category)
+        : [...prev, category]
     );
-};
+  };
 
-const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle form submission to create a thread
-};
+
+    const finalCategories = [...selectedCategories];
+    if (newCategory.trim() && !finalCategories.includes(newCategory.trim())) {
+      finalCategories.push(newCategory.trim());
+      // Optionally POST newCategory to your backend to save it
+    }
+
+    // Send threadTitle, threadContent, and finalCategories to your API
+    console.log({
+      threadTitle,
+      threadContent,
+      categories: finalCategories,
+    });
+
+    // Clear form
+    setThreadTitle("");
+    setThreadContent("");
+    setSelectedCategories([]);
+    setNewCategory("");
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
+      {/* Navbar */}
       <nav className="bg-gray-800 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link to="/" className="text-white text-xl font-semibold">ForumKode</Link>
+            <Link to="/" className="text-white text-xl font-semibold">
+              ForumKode
+            </Link>
+            <div className="flex space-x-4">
+              <Link to="/ask" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Ask Question</Link>
+              <Link to="/about" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">About</Link>
+              <Link to="/me" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Profile</Link>
+            </div>
           </div>
         </div>
       </nav>
@@ -63,20 +86,31 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-700">Select Categories</label>
-            <div className="mt-2 flex flex-wrap gap-2">
+            <label className="block text-gray-700">Select Existing Categories</label>
+            <div className="mt-2 flex flex-wrap gap-4">
               {categories.map((category) => (
-                <div key={category}>
+                <label key={category} className="flex items-center gap-2">
                   <input
                     type="checkbox"
-                    id={category}
                     checked={selectedCategories.includes(category)}
                     onChange={() => handleCategoryChange(category)}
                   />
-                  <label htmlFor={category} className="ml-2">{category}</label>
-                </div>
+                  {category}
+                </label>
               ))}
             </div>
+          </div>
+
+          <div className="mb-6">
+            <label htmlFor="newCategory" className="block text-gray-700">Add New Category (optional)</label>
+            <input
+              type="text"
+              id="newCategory"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              className="mt-2 p-3 w-full border border-gray-300 rounded-md"
+              placeholder="e.g. Game Development"
+            />
           </div>
 
           <div className="flex justify-center mt-6">

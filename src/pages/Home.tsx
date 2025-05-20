@@ -13,24 +13,9 @@ const Home = () => {
               </Link>
             </div>
             <div className="flex space-x-4">
-              <Link
-                to="/"
-                className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Home
-              </Link>
-              <Link
-                to="/ask"
-                className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Ask Question
-              </Link>
-              <Link
-                to="/about"
-                className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                About
-              </Link>
+              <Link to="/ask" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Ask Question</Link>
+              <Link to="/about" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">About</Link>
+              <Link to="/me" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Profile</Link>
             </div>
           </div>
         </div>
@@ -53,7 +38,7 @@ const Home = () => {
               Get Started
             </Link>
             <Link
-              to="/explore"
+              to="/threads"
               className="px-8 py-3 border border-gray-300 text-gray-800 font-medium rounded-lg hover:bg-gray-50 transition"
             >
               Explore Topics
@@ -68,19 +53,15 @@ const Home = () => {
         <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           <div className="bg-gray-100 p-6 rounded-lg shadow-md">
             <h3 className="text-xl font-semibold text-gray-900">Web Development</h3>
-            <p className="mt-2 text-gray-600">Discuss topics related to web technologies.</p>
           </div>
           <div className="bg-gray-100 p-6 rounded-lg shadow-md">
             <h3 className="text-xl font-semibold text-gray-900">Data Science</h3>
-            <p className="mt-2 text-gray-600">Ask questions related to data analysis and machine learning.</p>
           </div>
           <div className="bg-gray-100 p-6 rounded-lg shadow-md">
             <h3 className="text-xl font-semibold text-gray-900">Mobile Development</h3>
-            <p className="mt-2 text-gray-600">Share knowledge on building mobile applications.</p>
           </div>
           <div className="bg-gray-100 p-6 rounded-lg shadow-md">
             <h3 className="text-xl font-semibold text-gray-900">DevOps</h3>
-            <p className="mt-2 text-gray-600">Discussions around cloud computing, automation, and deployment.</p>
           </div>
         </div>
       </section>
