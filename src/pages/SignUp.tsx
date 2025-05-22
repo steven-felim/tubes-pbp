@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 
 const SignUp = () => {
   const [name, setName] = useState("");
@@ -6,14 +7,36 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (password !== confirmPassword) {
       alert("Passwords don't match!");
       return;
     }
-    console.log({ name, email, password });
-    // Add your signup logic here
+
+    try {
+      const response = await axios.post("http://localhost:3000/session/register", {
+        name,
+        email,
+        password,
+      }, {
+        withCredentials: true, // To send cookies if needed
+      });
+
+      alert("Registration successful!");
+      console.log(response.data);
+      // Optional: redirect to sign-in page
+      window.location.href = "/signin";
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Registration error:", error);
+        alert(error.response?.data?.message || "Registration failed.");
+      } else {
+        console.error("Unexpected error:", error);
+        alert("An unexpected error occurred.");
+      }
+    }
   };
 
   return (
@@ -22,9 +45,7 @@ const SignUp = () => {
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Sign Up</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Full Name
-            </label>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Full Name</label>
             <input
               id="name"
               type="text"
@@ -35,9 +56,7 @@ const SignUp = () => {
             />
           </div>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
             <input
               id="email"
               type="email"
@@ -48,9 +67,7 @@ const SignUp = () => {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
             <input
               id="password"
               type="password"
@@ -62,9 +79,7 @@ const SignUp = () => {
             />
           </div>
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-              Confirm Password
-            </label>
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password</label>
             <input
               id="confirmPassword"
               type="password"
