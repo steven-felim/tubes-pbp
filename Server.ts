@@ -29,7 +29,7 @@ sequelize.authenticate()
 
 const app = express();
 
-// Middleware harus didefinisikan SEBELUM routes
+
 app.use(cors({
   origin: 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -44,7 +44,7 @@ app.use("/api/categories", categoryRouter);
 app.use("/api/threads", threadRouter);
 app.use("/api/posts", postRouter);
 
-// Error handling middleware
+
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
