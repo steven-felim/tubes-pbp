@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Home from "./pages/Home";
+import About from "./pages/About";
 import Profile from "./pages/Profile";
 import Threads from "./pages/Threads";
 import ThreadDetail from "./pages/ThreadDetail";
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/about" element={<About />} />
         <Route path="/me" element={<Profile />} />
         <Route path="/threads" element={<Threads />} />
         <Route path="/threads/:id" element={<ThreadDetail />} />
