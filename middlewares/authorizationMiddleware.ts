@@ -1,33 +1,36 @@
 import { Request, Response, NextFunction } from "express";
-import { Session } from "../models/Session";
+import jwt from "jsonwebtoken";
+import { appConfig } from "../config/app";
 import { users } from "../config/data";
 
-export const authorizationMiddleware = async (
+export async function authorizationMiddleware(
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<void> => {
-  const sessionId = req.cookies.sessionId;
-
-  if (!sessionId) {
-    res.status(401).json({ message: "Unauthorized: No session" });
+) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (!token) {
+    res.sendStatus(401); // Unauthorized
     return;
   }
-
-  const session = await Session.findByPk(sessionId);
-
-  if (!session) {
-    res.status(401).json({ message: "Unauthorized: Invalid session" });
+  try {
+    const result = await jwt.verify(token, appConfig.jwtSecret);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const userId = (result as any).userId as string;
+    if (!userId) {
+      res.sendStatus(401); // Unauthorized
+      return;
+    }
+    const user = users.find((user) => user.id === userId);
+    if (!user) {
+      res.sendStatus(401); // Unauthorized
+      return;
+    }
+    res.locals.user = user;
+    next();
+  } catch {
+    res.sendStatus(401); // Unauthorized
     return;
   }
-
-  const user = users.find((u) => u.id === session.userId);
-
-  if (!user) {
-    res.status(401).json({ message: "Unauthorized: User not found" });
-    return;
-  }
-
-  res.locals.user = user;
-  next();
-};
+}
