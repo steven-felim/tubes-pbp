@@ -1,5 +1,4 @@
-import express from "express";
-import cookieParser from "cookie-parser";
-
-const app = express();
-app.use(cookieParser());
+export const appConfig = {
+  jwtSecret: "mysecretkey",
+  jwtExpiry: 60 * 60 * 1000, // 1 hour,
+};
