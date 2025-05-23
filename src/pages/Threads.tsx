@@ -13,6 +13,8 @@ const AllThreads = () => {
 
   const categories = ["Web Development", "Data Science", "Mobile Development", "DevOps"];
 
+  const isLoggedIn = !!localStorage.getItem("token");
+
   useEffect(() => {
     // Fetch threads from API (example)
     // fetchThreads(selectedCategory).then(setThreads);
@@ -31,9 +33,19 @@ const AllThreads = () => {
               </Link>
             </div>
             <div className="flex space-x-4">
-              <Link to="/ask" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Ask Question</Link>
-              <Link to="/about" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">About</Link>
-              <Link to="/me" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Profile</Link>
+              {isLoggedIn && (
+                <Link to="/ask" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
+                  Ask Question
+                </Link>
+              )}
+              <Link to="/about" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
+                About
+              </Link>
+              {isLoggedIn && (
+                <Link to="/me" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
+                  Profile
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -62,7 +74,7 @@ const AllThreads = () => {
           {threads.map((thread) => (
             <div key={thread.id} className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-xl font-semibold text-gray-900">
-                <Link to={`/thread/${thread.id}`}>{thread.title}</Link>
+                <Link to={`/threads/${thread.id}`}>{thread.title}</Link>
               </h3>
               <p className="mt-2 text-gray-600">{thread.content}</p>
             </div>
