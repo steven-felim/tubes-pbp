@@ -147,24 +147,15 @@ const Home = () => {
             </div>
             <div className="flex space-x-4">
               {isLoggedIn && (
-                <Link
-                  to="/ask"
-                  className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
-                >
+                <Link to="/ask" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
                   Ask Question
                 </Link>
               )}
-              <Link
-                to="/about"
-                className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
-              >
+              <Link to="/about" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
                 About
               </Link>
               {isLoggedIn && (
-                <Link
-                  to="/me"
-                  className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
-                >
+                <Link to="/me" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
                   Profile
                 </Link>
               )}
