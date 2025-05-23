@@ -1,16 +1,34 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const EditProfile = () => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    // Handle update profile logic
-};
+    // Handle update profile logic here (e.g., API call)
+  };
 
+  const handleSignOut = async () => {
+    try {
+      // Optional: Call your API to clear cookies/sessions
+      await fetch("/api/signout", {
+        method: "POST", // Adjust to your backend's method
+        credentials: "include", // If using cookies for auth
+      });
+
+      // Clear client-side token
+      localStorage.removeItem("token");
+
+      // Redirect to home
+      navigate("/");
+    } catch (err) {
+      console.error("Sign out failed:", err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -24,9 +42,15 @@ const EditProfile = () => {
               </Link>
             </div>
             <div className="flex space-x-4">
-              <Link to="/ask" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Ask Question</Link>
-              <Link to="/about" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">About</Link>
-              <Link to="/me" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Profile</Link>
+              <Link to="/ask" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
+                Ask Question
+              </Link>
+              <Link to="/about" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
+                About
+              </Link>
+              <Link to="/me" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
+                Profile
+              </Link>
             </div>
           </div>
         </div>
@@ -77,6 +101,13 @@ const EditProfile = () => {
               className="px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
             >
               Update Profile
+            </button>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="ml-4 px-8 py-3 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition flex items-center justify-center"
+            >
+              Sign Out
             </button>
           </div>
         </form>

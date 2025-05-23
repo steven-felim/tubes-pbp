@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 interface TeamMember {
   name: string;
@@ -26,6 +27,13 @@ const teamMembers: TeamMember[] = [
 ];
 
 const About: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  
+    useEffect(() => {
+      const token = localStorage.getItem("token");
+      setIsLoggedIn(!!token);
+    }, []);
+
   return (
     <div className="min-h-screen bg-gray-100">
         {/* Navbar */}
@@ -37,10 +45,34 @@ const About: React.FC = () => {
                 ForumKode
               </Link>
             </div>
+            <div className="flex items-center">
+              <Link to="/" className="text-white text-xl font-semibold">
+                ForumKode
+              </Link>
+            </div>
             <div className="flex space-x-4">
-              <Link to="/ask" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Ask Question</Link>
-              <Link to="/about" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">About</Link>
-              <Link to="/me" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Profile</Link>
+              {isLoggedIn && (
+                <Link
+                  to="/ask"
+                  className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Ask Question
+                </Link>
+              )}
+              <Link
+                to="/about"
+                className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
+              >
+                About
+              </Link>
+              {isLoggedIn && (
+                <Link
+                  to="/me"
+                  className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Profile
+                </Link>
+              )}
             </div>
           </div>
         </div>

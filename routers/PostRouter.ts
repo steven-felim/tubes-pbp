@@ -3,7 +3,7 @@ import { Post } from "../models/Post";
 
 export const postRouter = express.Router();
 
-postRouter.get("/thread/:threadId", async (req, res) => {
+postRouter.get("/threads/:threadId", async (req, res) => {
     const { threadId } = req.params;
     const posts = await Post.findAll({ where: { threadId } });
     res.status(200).json(posts);
