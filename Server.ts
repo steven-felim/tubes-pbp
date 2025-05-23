@@ -10,6 +10,8 @@ import { Session } from "./models/Session";
 import config from "./config/config.json";
 import { SequelizeOptions } from "sequelize-typescript";
 import { userRouter } from "./routers/UserRouter";
+import { threadRouter } from "./routers/ThreadRouter";
+import { categoryRouter } from "./routers/CategoryRouter";
 import cors from "cors";
 
 const sequelize = new Sequelize({
@@ -26,24 +28,28 @@ sequelize.authenticate()
   });
 
 const app = express();
+
+
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+}));
 app.use(json());
 
-// Set up routes
-app.use("/user", userRouter);
-app.use("/", authRouter);
-app.use("/category", authRouter);
-app.use("/thread", authRouter);
-app.use("/post", postRouter);
-app.use("/post", postRouter, authRouter);
+// Perbaikan route yang benar
+app.use("/api/auth", authRouter);
+app.use("/api/users", userRouter);
+app.use("/api/categories", categoryRouter);
+app.use("/api/threads", threadRouter);
+app.use("/api/posts", postRouter);
 
-// Start server
-app.listen(3000, () => {
-  console.log("App started at port 3000");
+
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
 
-// Enable CORS for your frontend domain (adjust the URL accordingly)
-app.use(cors({
-  origin: 'http://localhost:5173', // React dev server
-  methods: ['GET', 'POST'],
-  credentials: true, // Enable cookies
-}));
+app.listen(3000, () => {
+  console.log("Server running on http://localhost:3000");
+});
