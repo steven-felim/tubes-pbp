@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
 
 interface TeamMember {
   name: string;
@@ -27,12 +26,7 @@ const teamMembers: TeamMember[] = [
 ];
 
 const About: React.FC = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  
-    useEffect(() => {
-      const token = localStorage.getItem("token");
-      setIsLoggedIn(!!token);
-    }, []);
+  const isLoggedIn = !!localStorage.getItem("token");
 
   return (
     <div className="min-h-screen bg-gray-100">

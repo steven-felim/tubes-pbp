@@ -13,12 +13,7 @@ const AllThreads = () => {
 
   const categories = ["Web Development", "Data Science", "Mobile Development", "DevOps"];
 
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
-  }, []);
+  const isLoggedIn = !!localStorage.getItem("token");
 
   useEffect(() => {
     // Fetch threads from API (example)
