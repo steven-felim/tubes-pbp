@@ -39,11 +39,6 @@ const About: React.FC = () => {
                 ForumKode
               </Link>
             </div>
-            <div className="flex items-center">
-              <Link to="/" className="text-white text-xl font-semibold">
-                ForumKode
-              </Link>
-            </div>
             <div className="flex space-x-4">
               {isLoggedIn && (
                 <Link to="/ask" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
