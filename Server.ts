@@ -11,6 +11,7 @@ import config from "./config/config.json";
 import { SequelizeOptions } from "sequelize-typescript";
 import { userRouter } from "./routers/UserRouter";
 import { threadRouter } from "./routers/ThreadRouter";
+import { SessionRouter } from "./routers/SessionRouter";
 import { categoryRouter } from "./routers/CategoryRouter";
 import cors from "cors";
 
@@ -43,9 +44,10 @@ app.use("/api/users", userRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/threads", threadRouter);
 app.use("/api/posts", postRouter);
+app.use("/api/session", SessionRouter);
 
 
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error, req: express.Request, res: express.Response) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
 });
