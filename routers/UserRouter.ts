@@ -1,17 +1,16 @@
 import express, { Request, Response } from "express";
 import { User } from "../models/User";
 import { loadCurrentUser } from "../middlewares/loadCurrentUser";
-import { authenticate } from "../controller/Authorization";
 
 export const userRouter = express.Router();
 
 type AuthenticatedRequest = Request & { user?: { id: string }, dbUser?: User };
 
-userRouter.get("/me", authenticate, loadCurrentUser, (req: AuthenticatedRequest, res: Response) => {
+userRouter.get("/me", loadCurrentUser, (req: AuthenticatedRequest, res: Response) => {
     res.json(req.dbUser);
 });
 
-userRouter.put("/me", authenticate, loadCurrentUser, async (req: AuthenticatedRequest, res: Response) => {
+userRouter.put("/me", loadCurrentUser, async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { username, bio } = req.body;
         await req.dbUser!.update({ username, bio });
@@ -21,7 +20,7 @@ userRouter.put("/me", authenticate, loadCurrentUser, async (req: AuthenticatedRe
     }
 });
 
-userRouter.delete("/me", authenticate, loadCurrentUser, async (req: AuthenticatedRequest, res: Response) => {
+userRouter.delete("/me", loadCurrentUser, async (req: AuthenticatedRequest, res: Response) => {
     try {
         await req.dbUser!.destroy();
         res.status(204).send();
@@ -30,7 +29,7 @@ userRouter.delete("/me", authenticate, loadCurrentUser, async (req: Authenticate
     }
 });
 
-userRouter.get("/:id", authenticate, async (req: AuthenticatedRequest, res: Response) => {
+userRouter.get("/:id", async (req: AuthenticatedRequest, res: Response) => {
     try {
         const user = await User.findByPk(req.params.id);
         if (!user) {

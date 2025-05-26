@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const EditProfile = () => {
@@ -23,12 +23,34 @@ const EditProfile = () => {
       // Clear client-side token
       localStorage.removeItem("token");
 
-      // Redirect to home
+      // Optionally navigate to login or home page after sign out
       navigate("/");
-    } catch (err) {
-      console.error("Sign out failed:", err);
+    } catch (error) {
+      console.error("Error signing out:", error);
     }
   };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch("/api/users/me", {
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setUsername(data.username || "");
+          setEmail(data.email || "");
+          // Optional: store bio or other fields too
+        } else {
+          console.error("Failed to fetch profile");
+        }
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100">

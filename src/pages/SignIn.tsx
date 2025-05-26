@@ -1,12 +1,27 @@
 import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ email, password });
+
+    try {
+      const response = await axios.post("http://localhost:3000/session/login", {
+        email,
+        password,
+      }, { withCredentials: true });
+
+      console.log("Logged in user:", response.data);
+      navigate("/me"); // redirect to profile
+    } catch (error) {
+      alert("Login failed. Please check your credentials.");
+      console.error(error);
+    }
   };
 
   return (
