@@ -5,25 +5,50 @@ const EditProfile = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    // Handle update profile logic here (e.g., API call)
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("You must be logged in to update profile.");
+        navigate("/signin");
+        return;
+      }
+
+      const res = await fetch("http://localhost:3000/api/me", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name, email }),
+      });
+
+      if (res.ok) {
+        const updatedUser = await res.json();
+        console.log("Profile updated:", updatedUser);
+        alert("Profile updated successfully!");
+      } else {
+        const errorData = await res.json();
+        alert(`Failed to update profile: ${errorData.error || res.statusText}`);
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("An error occurred while updating your profile.");
+    }
   };
 
   const handleSignOut = async () => {
     try {
-      // Optional: Call your API to clear cookies/sessions
       await fetch("http://localhost:3000/api/signout", {
-        method: "POST", // Adjust to your backend's method
-        credentials: "include", // If using cookies for auth
+        method: "POST",
+        credentials: "include",
       });
 
-      // Clear client-side token
       localStorage.removeItem("token");
 
-      // Optionally navigate to login or home page after sign out
       navigate("/");
     } catch (error) {
       console.error("Error signing out:", error);
@@ -39,11 +64,11 @@ const EditProfile = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          credentials: "include", // Optional, if you're also using cookies
+          credentials: "include",
         });
 
         const data = await res.json();
-        console.log("Fetched user data:", data); // <-- check if this logs correctly
+        console.log("Fetched user data:", data);
 
         if (res.ok) {
           setName(data.name || "");
@@ -113,19 +138,7 @@ const EditProfile = () => {
               required
             />
           </div>
-
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-gray-700">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-2 p-3 w-full border border-gray-300 rounded-md"
-              required
-            />
-          </div>
-
+          
           <div className="flex justify-center mt-6">
             <button
               type="submit"
