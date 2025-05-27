@@ -45,23 +45,27 @@ authRouter.post("/signup", (req, res, next) => {
 });
 
 authRouter.post("/signin", (req, res, next) => {
+  console.log("Signin attempt:", req.body);
+
+  const { email, password } = req.body;
   const user = users.find(
-    (user) =>
-      user.name === req.body.name && user.password === req.body.password
+    (user) => user.email === email && user.password === password
   );
+
   if (!user) {
+    console.log("User not found or wrong password");
     next(new Error("Invalid credentials"));
     return;
   }
+
+  console.log("User found:", user);
+
   const token = jwt.sign(
-    {
-      userId: user.id,
-    },
+    { userId: user.id },
     appConfig.jwtSecret,
-    {
-      expiresIn: appConfig.jwtExpiry,
-    }
+    { expiresIn: appConfig.jwtExpiry }
   );
+
   res.status(200).json({ message: "Login successful", token });
 });
 
