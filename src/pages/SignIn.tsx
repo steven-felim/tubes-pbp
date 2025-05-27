@@ -19,7 +19,7 @@ const SignIn = () => {
       console.log("Logged in user:", response.data);
       localStorage.setItem("token", response.data.token);
       
-      navigate("/home"); // Redirect after storing session
+      navigate("/"); // Redirect after storing session
     } catch (error) {
       alert("Login failed. Please check your credentials.");
       console.error(error);

@@ -38,7 +38,7 @@ export class Thread extends Model {
     declare content: string;
 
     @Column({
-        allowNull: false,
+        allowNull: true,
         type: DataType.STRING,
     })
     declare categoryId: string;
