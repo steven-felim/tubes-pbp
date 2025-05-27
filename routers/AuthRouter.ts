@@ -19,34 +19,53 @@ authRouter.post("/signup", (req, res, next) => {
     next(new Error("User already exists"));
     return;
   }
+  
   const newUser: User = {
     id: v4(),
     name: name,
     email: email,
     password: password,
   };
+
+  const token = jwt.sign(
+    { userId: newUser.id },
+    appConfig.jwtSecret,
+    { expiresIn: appConfig.jwtExpiry }
+  );
+
+  res.status(201).json({
+    message: "Registration successful",
+    token,
+    user: newUser,
+  });
+
   users.push(newUser);
+  console.log("Incoming signup data:", req.body);
   res.status(201).json(newUser);
 });
 
 authRouter.post("/signin", (req, res, next) => {
+  console.log("Signin attempt:", req.body);
+
+  const { email, password } = req.body;
   const user = users.find(
-    (user) =>
-      user.name === req.body.name && user.password === req.body.password
+    (user) => user.email === email && user.password === password
   );
+
   if (!user) {
+    console.log("User not found or wrong password");
     next(new Error("Invalid credentials"));
     return;
   }
+
+  console.log("User found:", user);
+
   const token = jwt.sign(
-    {
-      userId: user.id,
-    },
+    { userId: user.id },
     appConfig.jwtSecret,
-    {
-      expiresIn: appConfig.jwtExpiry,
-    }
+    { expiresIn: appConfig.jwtExpiry }
   );
+
   res.status(200).json({ message: "Login successful", token });
 });
 

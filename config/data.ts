@@ -42,19 +42,19 @@ export const users: User[] = [
 //   const users = [
 //     {
 //       id: uuidv4(),
-//       username: "alice",
+//       name: "alice",
 //       email: "alice@example.com",
 //       password: "password123",
 //     },
 //     {
 //       id: uuidv4(),
-//       username: "bob",
+//       name: "bob",
 //       email: "bob@example.com",
 //       password: "qwerty456",
 //     },
 //     {
 //       id: uuidv4(),
-//       username: "charlie",
+//       name: "charlie",
 //       email: "charlie@example.com",
 //       password: "letmein789",
 //     },

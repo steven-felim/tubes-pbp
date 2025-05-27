@@ -27,6 +27,9 @@ const SignUp = () => {
         withCredentials: true,
       });
 
+      const token = response.data;
+      localStorage.setItem("token", token);
+
       alert("Registration successful!");
       console.log(response.data);
 
