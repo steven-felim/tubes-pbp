@@ -35,7 +35,7 @@ export class Post extends Model {
 
     @Column({
         allowNull: false,
-        type: DataType.STRING,
+        type: DataType.UUIDV4,
     })
     declare refId: string;
 
