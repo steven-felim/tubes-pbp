@@ -26,10 +26,9 @@ const EditProfile = () => {
         body: JSON.stringify({ name, email }),
       });
 
-      const text = await res.text(); // Get raw response body
+      const text = await res.text();
 
       if (res.ok) {
-        const updatedUser = JSON.parse(text);
         alert("Profile updated successfully!");
       } else {
         console.error("Error details:", text);

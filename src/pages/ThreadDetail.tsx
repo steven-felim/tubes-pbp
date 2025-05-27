@@ -199,10 +199,10 @@ const ThreadDetail = () => {
               <div className="mt-6 text-center">
                 <p className="text-gray-600 mb-2">Want to reply or comment?</p>
                 <Link
-                  to="/signin"
+                  to="/signup"
                   className="inline-block px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
                 >
-                  Sign In to Join the Discussion
+                  Sign Up to Join the Discussion
                 </Link>
               </div>
             )}
