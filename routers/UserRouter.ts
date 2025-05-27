@@ -6,16 +6,6 @@ export const userRouter = express.Router();
 
 type AuthenticatedRequest = Request & { user?: { id: string }, dbUser?: User };
 
-userRouter.get("/users", async (req: AuthenticatedRequest, res: Response) => {
-    try {
-        const users = await User.findAll(); 
-        res.json(users);
-    } catch {
-        res.status(500).json({ error: "Internal server error" });
-    }
-}
-);
-
 userRouter.get("/me", loadCurrentUser, (req: AuthenticatedRequest, res: Response) => {
     res.json(req.dbUser);
 });

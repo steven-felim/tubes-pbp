@@ -38,7 +38,7 @@ app.use(cors({
 app.use(json());
 
 // Perbaikan route yang benar
-app.use("/api/users", userRouter);
+app.use("/api/me", userRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/threads", threadRouter);
 app.use("/api/posts", postRouter);
