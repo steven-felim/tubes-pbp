@@ -1,5 +1,7 @@
 import express from "express";
 import { Thread } from "../models/Thread";
+import { ThreadCategory } from "../models/ThreadCategory";
+import { authorizationMiddleware } from "../middlewares/authorizationMiddleware";
 
 export const threadRouter = express.Router();
 
@@ -28,9 +30,37 @@ threadRouter.get("/:id", async (req, res) => {
     res.status(200).json(thread);
 });
 
-threadRouter.post("/", async (req, res) => {
-    const project = await Thread.create(req.body);
-    res.status(201).json(project);
+threadRouter.post("/", authorizationMiddleware, async (req, res) => {
+  const { title, content, categoryIds } = req.body;
+  const user = res.locals.user;
+
+  if (!user) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
+  try {
+    const thread = await Thread.create({
+      title,
+      content,
+      userId: user.id,
+      categoryIds: categoryIds || [],
+    });
+
+    if (categoryIds && Array.isArray(categoryIds)) {
+      for (const categoryId of categoryIds) {
+        await ThreadCategory.create({
+          threadId: thread.id,
+          categoryId,
+        });
+      }
+    }
+
+    res.status(201).json(thread);
+  } catch (err) {
+    console.error("Thread creation error:", err);
+    res.status(500).json({ error: "Could not create thread." });
+  }
 });
 
 threadRouter.put("/:id", async (req, res) => {

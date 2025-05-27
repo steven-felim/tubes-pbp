@@ -1,47 +1,38 @@
 import { Router } from "express";
-import { v4 } from "uuid";
 import { authorizationMiddleware } from "../middlewares/authorizationMiddleware";
 import jwt from "jsonwebtoken";
 import { appConfig } from "../config/app";
-import { User, users } from "../config/data";
+import { users } from "../config/data";
+import { User } from "../models/User";
 
 export const authRouter = Router();
 
-authRouter.post("/signup", (req, res, next) => {
+authRouter.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
-  const existingUser = users.find((user) => user.name === name);
-  const existingEmail = users.find((user) => user.email === email);
-  if (existingEmail) {
-    next(new Error("Email already exists"));
-    return;
+
+  try {
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      res.status(400).json({ message: "Email already exists" });
+    }
+
+    const newUser = await User.create({ name, email, password });
+
+    const token = jwt.sign(
+      { userId: newUser.id },
+      appConfig.jwtSecret,
+      { expiresIn: appConfig.jwtExpiry }
+    );
+
+    res.status(201).json({
+      message: "Registration successful",
+      token,
+      user: newUser,
+    });
+  } catch (err) {
+    console.error("Signup error:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
-  if (existingUser) {
-    next(new Error("User already exists"));
-    return;
-  }
-  
-  const newUser: User = {
-    id: v4(),
-    name: name,
-    email: email,
-    password: password,
-  };
-
-  users.push(newUser);
-  console.log("Incoming signup data:", req.body);
-
-  const token = jwt.sign(
-    { userId: newUser.id },
-    appConfig.jwtSecret,
-    { expiresIn: appConfig.jwtExpiry }
-  );
-
-  res.status(201).json({
-    message: "Registration successful",
-    token,
-    user: newUser,
-  });
-
 });
 
 authRouter.post("/signin", (req, res, next) => {
@@ -61,12 +52,12 @@ authRouter.post("/signin", (req, res, next) => {
   console.log("User found:", user);
 
   const token = jwt.sign(
-    { userId: user.id },
-    appConfig.jwtSecret,
-    { expiresIn: appConfig.jwtExpiry }
-  );
+      { userId: user.id },
+      appConfig.jwtSecret,
+      { expiresIn: appConfig.jwtExpiry }
+    );
 
-  res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ message: "Login successful", token });
 });
 
 authRouter.post("/signout", (req, res, next) => {
@@ -76,7 +67,21 @@ authRouter.post("/signout", (req, res, next) => {
   next();
 });
 
-authRouter.get("/me", authorizationMiddleware, (req, res, next) => {
-  res.status(200).json(res.locals.user);
-  next();
+authRouter.get("/me", authorizationMiddleware, async (req, res) => {
+  try {
+    const userId = res.locals.user.id;
+    const user = await User.findByPk(userId, {
+      attributes: ["id", "name", "email"] // Avoid sending password
+    });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    res.status(200).json(user);
+  } catch (err) {
+    console.error("Fetch profile error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
