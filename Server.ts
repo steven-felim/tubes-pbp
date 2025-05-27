@@ -7,6 +7,7 @@ import { Category } from "./models/Category";
 import { Thread } from "./models/Thread";
 import { Post } from "./models/Post";
 import { Session } from "./models/Session";
+import { ThreadCategory } from "./models/ThreadCategory";
 import config from "./config/config.json";
 import { SequelizeOptions } from "sequelize-typescript";
 import { userRouter } from "./routers/UserRouter";
@@ -16,7 +17,7 @@ import cors from "cors";
 
 const sequelize = new Sequelize({
   ...config.development,
-  models: [User, Category, Thread, Post, Session],
+  models: [User, Category, Thread, ThreadCategory, Post, Session],
 } as SequelizeOptions);
 
 sequelize.authenticate()
@@ -43,6 +44,7 @@ app.use("/api/categories", categoryRouter);
 app.use("/api/threads", threadRouter);
 app.use("/api/posts", postRouter);
 app.use("/api/", authRouter);
+
 
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error("Error:", err.message);

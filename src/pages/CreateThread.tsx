@@ -17,27 +17,48 @@ const CreateThread = () => {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const finalCategories = [...selectedCategories];
     if (newCategory.trim() && !finalCategories.includes(newCategory.trim())) {
       finalCategories.push(newCategory.trim());
-      // Optionally POST newCategory to your backend to save it
     }
 
-    // Send threadTitle, threadContent, and finalCategories to your API
-    console.log({
-      threadTitle,
-      threadContent,
-      categories: finalCategories,
-    });
+    try {
+      const token = localStorage.getItem("token");
 
-    // Clear form
-    setThreadTitle("");
-    setThreadContent("");
-    setSelectedCategories([]);
-    setNewCategory("");
+      const response = await fetch("http://localhost:3000/api/threads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({
+          title: threadTitle,
+          content: threadContent,
+          categoryIds: finalCategories,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create thread");
+      }
+
+      const result = await response.json();
+      console.log("Thread created:", result);
+
+      // Optionally redirect or show success message
+      setThreadTitle("");
+      setThreadContent("");
+      setSelectedCategories([]);
+      setNewCategory("");
+      alert("Thread created successfully!");
+    } catch (err) {
+      console.error("Error creating thread:", err);
+      alert("Failed to create thread.");
+    }
   };
 
   return (
@@ -46,7 +67,7 @@ const CreateThread = () => {
       <nav className="bg-gray-800 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link to="/home" className="text-white text-xl font-semibold">
+            <Link to="/" className="text-white text-xl font-semibold">
               ForumKode
             </Link>
             <div className="flex space-x-4">

@@ -1,5 +1,7 @@
-import { Column, DataType, Model, Table } from "sequelize-typescript";
+import { BelongsToMany, Column, DataType, Model, Table } from "sequelize-typescript";
 import { v4 as uuidv4 } from "uuid";
+import { Thread } from "./Thread";
+import { ThreadCategory } from "./ThreadCategory";
 
 @Table({
     tableName: "Category",
@@ -18,4 +20,7 @@ export class Category extends Model {
     allowNull: false,
   })
   declare name: string;
+
+  @BelongsToMany(() => Thread, () => ThreadCategory)
+  declare threads: Thread[];
 }

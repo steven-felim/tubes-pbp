@@ -33,7 +33,7 @@ const SignUp = () => {
       alert("Registration successful!");
       console.log(response.data);
 
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Registration error:", error);

@@ -15,7 +15,7 @@ const EditProfile = () => {
   const handleSignOut = async () => {
     try {
       // Optional: Call your API to clear cookies/sessions
-      await fetch("/api/signout", {
+      await fetch("http://localhost:3000/api/signout", {
         method: "POST", // Adjust to your backend's method
         credentials: "include", // If using cookies for auth
       });
@@ -24,7 +24,7 @@ const EditProfile = () => {
       localStorage.removeItem("token");
 
       // Optionally navigate to login or home page after sign out
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       console.error("Error signing out:", error);
     }
@@ -35,7 +35,7 @@ const EditProfile = () => {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await fetch("/api/me", {
+        const res = await fetch("http://localhost:3000/api/me", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -68,7 +68,7 @@ const EditProfile = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link to="/home" className="text-white text-xl font-semibold">
+              <Link to="/" className="text-white text-xl font-semibold">
                 ForumKode
               </Link>
             </div>
@@ -91,7 +91,7 @@ const EditProfile = () => {
         <h2 className="text-3xl font-bold text-center text-gray-900 mb-6">Edit Profile</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="name" className="block text-gray-700">name</label>
+            <label htmlFor="name" className="block text-gray-700">Name</label>
             <input
               type="text"
               id="name"
