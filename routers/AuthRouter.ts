@@ -68,12 +68,3 @@ authRouter.post("/signout", (req, res, next) => {
   res.status(200).json({ message: "Logout successful" });
   next();
 });
-
-authRouter.get("/me", authorizationMiddleware, async (req, res) => {
-  const user = res.locals.user;
-  res.json({
-    id: user.id,
-    name: user.name,
-    email: user.email,
-  });
-});
