@@ -50,17 +50,17 @@ export async function up(queryInterface, Sequelize) {
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
     },
-    categoryId: {
-      type: Sequelize.UUID,
+    categoryName: {
+      type: Sequelize.STRING,
       allowNull: false,
-      primaryKey: true,
       references: {
         model: 'Category',
-        key: 'id',
+        key: 'name',
       },
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
     },
+
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE,
@@ -74,7 +74,7 @@ export async function up(queryInterface, Sequelize) {
   });
 
   await queryInterface.addConstraint('ThreadCategory', {
-    fields: ['threadId', 'categoryId'],
+    fields: ['threadId', 'categoryName'],
     type: 'unique',
     name: 'thread_category_unique',
   });
