@@ -9,6 +9,6 @@ export class ThreadCategory extends Model {
   declare threadId: string;
 
   @ForeignKey(() => Category)
-  @Column(DataType.UUID)
-  declare categoryId: string;
+  @Column(DataType.STRING)
+  declare categoryName: string;
 }

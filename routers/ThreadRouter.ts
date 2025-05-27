@@ -47,49 +47,41 @@ threadRouter.get("/:id", async (req, res) => {
 });
 
 threadRouter.post("/", authorizationMiddleware, async (req, res) => {
-  const { title, content, categories } = req.body; // Expecting categories to be an array of names
+  const { title, content, categoryIds } = req.body; // categoryIds = array of category names (e.g., ["General", "DevOps"])
   const user = res.locals.user;
 
   if (!user) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
   try {
-    // 1. Create the thread
     const thread = await Thread.create({
       title,
       content,
       userId: user.id,
     });
 
-    // 2. Handle categories if provided
-    if (Array.isArray(categories)) {
-      const categoryInstances = await Promise.all(
-        categories.map(async (name: string) => {
+    if (Array.isArray(categoryIds) && categoryIds.length > 0) {
+      const categories = await Promise.all(
+        categoryIds.map(async (name: string) => {
           const [category] = await Category.findOrCreate({ where: { name } });
           return category;
         })
       );
 
-      // 3. Associate categories with the thread
-      await thread.$set("categories", categoryInstances);
+      await thread.$set("categories", categories);
     }
 
-    // 4. Reload with categories included
-    const createdThread = await Thread.findByPk(thread.id, {
+    const fullThread = await Thread.findByPk(thread.id, {
       include: [Category],
     });
 
-    res.status(201).json(createdThread);
-    return;
+    res.status(201).json(fullThread);
   } catch (err) {
     console.error("Thread creation error:", err);
     res.status(500).json({ error: "Failed to create thread." });
-    return;
   }
 });
-
 
 threadRouter.put("/:id", authorizationMiddleware, async (req, res) => {
   const { id } = req.params;
