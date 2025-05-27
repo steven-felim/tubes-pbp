@@ -33,24 +33,33 @@ const EditProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch("/api/users/me", {
-          credentials: "include",
+        const token = localStorage.getItem("token");
+
+        const res = await fetch("/api/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include", // Optional, if you're also using cookies
         });
+
+        const data = await res.json();
+        console.log("Fetched user data:", data); // <-- check if this logs correctly
+
         if (res.ok) {
-          const data = await res.json();
           setName(data.name || "");
           setEmail(data.email || "");
-          // Optional: store bio or other fields too
         } else {
-          console.error("Failed to fetch profile");
+          console.error("Failed to fetch profile", res.status);
         }
       } catch (err) {
         console.error("Error fetching profile:", err);
       }
     };
 
+
     fetchProfile();
   }, []);
+
 
   return (
     <div className="min-h-screen bg-gray-100">

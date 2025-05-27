@@ -17,12 +17,15 @@ const SignIn = () => {
       }, { withCredentials: true });
 
       console.log("Logged in user:", response.data);
-      navigate("/me"); // redirect to profile
+      localStorage.setItem("token", response.data.token);
+      
+      navigate("/home"); // Redirect after storing session
     } catch (error) {
       alert("Login failed. Please check your credentials.");
       console.error(error);
     }
   };
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
