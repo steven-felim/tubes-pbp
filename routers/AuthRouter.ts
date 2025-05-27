@@ -27,6 +27,9 @@ authRouter.post("/signup", (req, res, next) => {
     password: password,
   };
 
+  users.push(newUser);
+  console.log("Incoming signup data:", req.body);
+
   const token = jwt.sign(
     { userId: newUser.id },
     appConfig.jwtSecret,
@@ -39,9 +42,6 @@ authRouter.post("/signup", (req, res, next) => {
     user: newUser,
   });
 
-  users.push(newUser);
-  console.log("Incoming signup data:", req.body);
-  res.status(201).json(newUser);
 });
 
 authRouter.post("/signin", (req, res, next) => {
