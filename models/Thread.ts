@@ -37,13 +37,7 @@ export class Thread extends Model {
     })
     declare content: string;
 
-    @Column({
-        allowNull: true,
-        type: DataType.STRING,
-    })
-    declare categoryId: string;
-
-      @BelongsToMany(() => Category, () => ThreadCategory)
+    @BelongsToMany(() => Category, () => ThreadCategory)
     declare categories: Category[];
 
     @Column({

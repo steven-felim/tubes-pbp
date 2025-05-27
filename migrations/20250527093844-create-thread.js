@@ -1,7 +1,6 @@
 'use strict';
 
 export async function up(queryInterface, Sequelize) {
-  // Create Thread table
   await queryInterface.createTable('Thread', {
     id: {
       allowNull: false,
@@ -39,17 +38,11 @@ export async function up(queryInterface, Sequelize) {
     },
   });
 
-  // Create ThreadCategory join table
   await queryInterface.createTable('ThreadCategory', {
-    id: {
-      allowNull: false,
-      primaryKey: true,
-      type: Sequelize.UUID,
-      defaultValue: Sequelize.literal('gen_random_uuid()'),
-    },
     threadId: {
       type: Sequelize.UUID,
       allowNull: false,
+      primaryKey: true,
       references: {
         model: 'Thread',
         key: 'id',
@@ -60,6 +53,7 @@ export async function up(queryInterface, Sequelize) {
     categoryId: {
       type: Sequelize.UUID,
       allowNull: false,
+      primaryKey: true,
       references: {
         model: 'Category',
         key: 'id',
@@ -79,7 +73,6 @@ export async function up(queryInterface, Sequelize) {
     },
   });
 
-  // Add unique constraint
   await queryInterface.addConstraint('ThreadCategory', {
     fields: ['threadId', 'categoryId'],
     type: 'unique',
@@ -88,7 +81,6 @@ export async function up(queryInterface, Sequelize) {
 }
 
 export async function down(queryInterface) {
-  // Drop in reverse order
   await queryInterface.dropTable('ThreadCategory');
   await queryInterface.dropTable('Thread');
 }

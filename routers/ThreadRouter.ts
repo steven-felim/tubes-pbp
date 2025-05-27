@@ -1,37 +1,53 @@
 import express from "express";
 import { Thread } from "../models/Thread";
-import { ThreadCategory } from "../models/ThreadCategory";
+import { Category } from "../models/Category";
 import { authorizationMiddleware } from "../middlewares/authorizationMiddleware";
 
 export const threadRouter = express.Router();
 
-threadRouter.get("/", async (req, res) => {
-    const threads = await Thread.findAll();
+threadRouter.get("/", async (_req, res) => {
+  try {
+    const threads = await Thread.findAll({ include: [Category] });
     res.status(200).json(threads);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
 });
 
 threadRouter.get("/category/:categoryId", async (req, res) => {
-    const { categoryId } = req.params;
-    try {
-        const threads = await Thread.findAll({ where: { categoryId } });
-        res.status(200).json(threads);
-    } catch (error) {
-        res.status(400).json({ error: (error as Error).message });
+  const { categoryId } = req.params;
+  try {
+    const category = await Category.findByPk(categoryId, {
+      include: [Thread],
+    });
+
+    if (!category) {
+      res.status(404).json({ error: "Category not found" });
+      return;
     }
+
+    res.status(200).json(category.threads);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
 });
 
 threadRouter.get("/:id", async (req, res) => {
-    const { id } = req.params;
-    const thread = await Thread.findByPk(id);
+  const { id } = req.params;
+  try {
+    const thread = await Thread.findByPk(id, { include: [Category] });
     if (!thread) {
-        res.status(404).json({ error: "Thread not found" });
-        return;
+      res.status(404).json({ error: "Thread not found" });
+      return;
     }
     res.status(200).json(thread);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
 });
 
 threadRouter.post("/", authorizationMiddleware, async (req, res) => {
-  const { title, content, categoryIds } = req.body;
+  const { title, content, categories } = req.body; // Expecting categories to be an array of names
   const user = res.locals.user;
 
   if (!user) {
@@ -40,56 +56,72 @@ threadRouter.post("/", authorizationMiddleware, async (req, res) => {
   }
 
   try {
+    // 1. Create the thread
     const thread = await Thread.create({
       title,
       content,
       userId: user.id,
-      categoryIds: categoryIds || [],
     });
 
-    if (categoryIds && Array.isArray(categoryIds)) {
-      for (const categoryId of categoryIds) {
-        await ThreadCategory.create({
-          threadId: thread.id,
-          categoryId,
-        });
-      }
+    // 2. Handle categories if provided
+    if (Array.isArray(categories)) {
+      const categoryInstances = await Promise.all(
+        categories.map(async (name: string) => {
+          const [category] = await Category.findOrCreate({ where: { name } });
+          return category;
+        })
+      );
+
+      // 3. Associate categories with the thread
+      await thread.$set("categories", categoryInstances);
     }
 
-    res.status(201).json(thread);
+    // 4. Reload with categories included
+    const createdThread = await Thread.findByPk(thread.id, {
+      include: [Category],
+    });
+
+    res.status(201).json(createdThread);
+    return;
   } catch (err) {
     console.error("Thread creation error:", err);
-    res.status(500).json({ error: "Could not create thread." });
+    res.status(500).json({ error: "Failed to create thread." });
+    return;
   }
 });
 
-threadRouter.put("/:id", async (req, res) => {
-    const { id } = req.params;
-    const { content } = req.body;
+
+threadRouter.put("/:id", authorizationMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const { content } = req.body;
+
+  try {
     const thread = await Thread.findByPk(id);
     if (!thread) {
-        res.status(404).json({ error: "Thread not found" });
-        return;
+      res.status(404).json({ error: "Thread not found" });
+      return;
     }
-    try {
-        await Thread.update({ content }, { where: { id } });
-        res.status(200).json(thread);
-    } catch (error) {
-        res.status(400).json({ error: (error as Error).message });
-    }
+
+    await thread.update({ content });
+    res.status(200).json(thread);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
 });
 
-threadRouter.delete("/:id", async (req, res) => {
-    const { id } = req.params;
+threadRouter.delete("/:id", authorizationMiddleware, async (req, res) => {
+  const { id } = req.params;
+
+  try {
     const thread = await Thread.findByPk(id);
     if (!thread) {
-        res.status(404).json({ error: "Thread not found" });
-        return;
+      res.status(404).json({ error: "Thread not found" });
+      return;
     }
-    try {
-        await Thread.destroy();
-        res.status(200).send();
-    } catch (error) {
-        res.status(400).json({ error: (error as Error).message });
-    }
+
+    await thread.destroy();
+    res.status(200).json({ message: "Thread deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
 });
