@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { appConfig } from "../config/app";
-import { users } from "../config/data";
+import { User } from "../models/User"; // adjust to your path
 
 export async function authorizationMiddleware(
   req: Request,
@@ -15,22 +15,27 @@ export async function authorizationMiddleware(
     return;
   }
   try {
-    const result = await jwt.verify(token, appConfig.jwtSecret);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const userId = (result as any).userId as string;
+    const result = jwt.verify(token, appConfig.jwtSecret) as { userId?: string };
+    const userId = result.userId;
     if (!userId) {
-      res.sendStatus(401); // Unauthorized
+      res.sendStatus(401);
       return;
     }
-    const user = users.find((user) => user.id === userId);
+
+    const user = await User.findByPk(userId, {
+      attributes: { exclude: ["password"] }, // exclude sensitive fields
+    });
+
     if (!user) {
-      res.sendStatus(401); // Unauthorized
+      res.sendStatus(401);
       return;
     }
+
     res.locals.user = user;
     next();
-  } catch {
-    res.sendStatus(401); // Unauthorized
+  } catch (error) {
+    console.error("Authorization error:", error);
+    res.sendStatus(401);
     return;
   }
 }

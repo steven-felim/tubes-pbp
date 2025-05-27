@@ -70,20 +70,10 @@ authRouter.post("/signout", (req, res, next) => {
 });
 
 authRouter.get("/me", authorizationMiddleware, async (req, res) => {
-  try {
-    const userId = res.locals.user.id;
-    const user = await User.findByPk(userId, {
-      attributes: ["id", "name", "email"] // Avoid sending password
-    });
-
-    if (!user) {
-      res.status(404).json({ message: "User not found" });
-      return;
-    }
-
-    res.status(200).json(user);
-  } catch (err) {
-    console.error("Fetch profile error:", err);
-    res.status(500).json({ message: "Internal server error" });
-  }
+  const user = res.locals.user;
+  res.json({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+  });
 });
