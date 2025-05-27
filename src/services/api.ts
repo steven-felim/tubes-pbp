@@ -9,9 +9,9 @@ const api = axios.create({
 // Auth Services
 export const authService = {
   login: (credentials: { email: string; password: string }) => 
-    api.post('/auth/login', credentials),
+    api.post('/signin', credentials),
   register: (userData: { username: string; email: string; password: string }) =>
-    api.post('/auth/register', userData),
+    api.post('/signup', userData),
 };
 
 // Thread Services
