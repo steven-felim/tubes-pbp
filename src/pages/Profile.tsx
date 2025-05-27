@@ -26,14 +26,16 @@ const EditProfile = () => {
         body: JSON.stringify({ name, email }),
       });
 
+      const text = await res.text(); // Get raw response body
+
       if (res.ok) {
-        const updatedUser = await res.json();
-        console.log("Profile updated:", updatedUser);
+        const updatedUser = JSON.parse(text);
         alert("Profile updated successfully!");
       } else {
-        const errorData = await res.json();
-        alert(`Failed to update profile: ${errorData.error || res.statusText}`);
+        console.error("Error details:", text);
+        alert(`Failed to update profile: ${text}`);
       }
+
     } catch (error) {
       console.error("Error updating profile:", error);
       alert("An error occurred while updating your profile.");
