@@ -17,7 +17,7 @@ const SignIn = () => {
       }, { withCredentials: true });
 
       console.log("Logged in user:", response.data);
-      navigate("/me"); // redirect to profile
+      navigate("/home");
     } catch (error) {
       alert("Login failed. Please check your credentials.");
       console.error(error);
