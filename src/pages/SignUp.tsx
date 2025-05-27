@@ -1,11 +1,14 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 
 const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,18 +19,18 @@ const SignUp = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/session/register", {
+      const response = await axios.post("http://localhost:3000/api/signup", {
         name,
         email,
         password,
       }, {
-        withCredentials: true, // To send cookies if needed
+        withCredentials: true,
       });
 
       alert("Registration successful!");
       console.log(response.data);
-      // Optional: redirect to sign-in page
-      window.location.href = "/signin";
+
+      navigate("/home");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Registration error:", error);
@@ -38,6 +41,7 @@ const SignUp = () => {
       }
     }
   };
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">

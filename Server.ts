@@ -11,7 +11,6 @@ import config from "./config/config.json";
 import { SequelizeOptions } from "sequelize-typescript";
 import { userRouter } from "./routers/UserRouter";
 import { threadRouter } from "./routers/ThreadRouter";
-import { SessionRouter } from "./routers/SessionRouter";
 import { categoryRouter } from "./routers/CategoryRouter";
 import cors from "cors";
 
@@ -39,17 +38,15 @@ app.use(cors({
 app.use(json());
 
 // Perbaikan route yang benar
-app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/threads", threadRouter);
 app.use("/api/posts", postRouter);
-app.use("/api/session", SessionRouter);
+app.use("/api/", authRouter);
 
-
-app.use((err: Error, req: express.Request, res: express.Response) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
+app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error("Error:", err.message);
+  res.status(400).json({ message: err.message });
 });
 
 app.listen(3000, () => {

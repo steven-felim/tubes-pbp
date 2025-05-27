@@ -8,8 +8,8 @@ import { User, users } from "../config/data";
 export const authRouter = Router();
 
 authRouter.post("/signup", (req, res, next) => {
-  const { username, email, password } = req.body;
-  const existingUser = users.find((user) => user.name === username);
+  const { name, email, password } = req.body;
+  const existingUser = users.find((user) => user.name === name);
   const existingEmail = users.find((user) => user.email === email);
   if (existingEmail) {
     next(new Error("Email already exists"));
@@ -21,13 +21,12 @@ authRouter.post("/signup", (req, res, next) => {
   }
   const newUser: User = {
     id: v4(),
-    name: username,
+    name: name,
     email: email,
     password: password,
   };
   users.push(newUser);
   res.status(201).json(newUser);
-  next();
 });
 
 authRouter.post("/signin", (req, res, next) => {
@@ -49,7 +48,6 @@ authRouter.post("/signin", (req, res, next) => {
     }
   );
   res.status(200).json({ message: "Login successful", token });
-  next();
 });
 
 authRouter.post("/signout", (req, res, next) => {
