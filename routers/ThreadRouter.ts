@@ -51,7 +51,8 @@ threadRouter.post("/", authorizationMiddleware, async (req, res) => {
   const user = res.locals.user;
 
   if (!user) {
-    return res.status(401).json({ error: "Unauthorized" });
+    res.status(401).json({ error: "Unauthorized" });
+    return;
   }
 
   try {

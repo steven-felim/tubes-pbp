@@ -2,7 +2,7 @@ import { BelongsToMany, Column, DataType, Model, Table } from "sequelize-typescr
 import { Thread } from "./Thread";
 import { ThreadCategory } from "./ThreadCategory";
 
-@Table({ tableName: "Category" })
+@Table({ tableName: "Category", timestamps: false })
 export class Category extends Model {
   @Column({
     type: DataType.STRING,
