@@ -2,7 +2,6 @@ import { Router } from "express";
 import { authorizationMiddleware } from "../middlewares/authorizationMiddleware";
 import jwt from "jsonwebtoken";
 import { appConfig } from "../config/app";
-import { users } from "../config/data";
 import { User } from "../models/User";
 
 export const authRouter = Router();
@@ -14,6 +13,7 @@ authRouter.post("/signup", async (req, res) => {
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       res.status(400).json({ message: "Email already exists" });
+      return;
     }
 
     const newUser = await User.create({ name, email, password });
@@ -35,29 +35,31 @@ authRouter.post("/signup", async (req, res) => {
   }
 });
 
-authRouter.post("/signin", (req, res, next) => {
+authRouter.post("/signin", async (req, res) => {
   console.log("Signin attempt:", req.body);
 
   const { email, password } = req.body;
-  const user = users.find(
-    (user) => user.email === email && user.password === password
-  );
 
-  if (!user) {
-    console.log("User not found or wrong password");
-    next(new Error("Invalid credentials"));
-    return;
+  try {
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      res.status(401).json({ message: "User not found" });
+    } else if (user.password !== password) {
+      res.status(401).json({ message: "Wrong password" });
+    } else {
+      const token = jwt.sign(
+        { userId: user.id },
+        appConfig.jwtSecret,
+        { expiresIn: appConfig.jwtExpiry }
+      );
+      console.log("User signed in:", user.email);
+      res.status(200).json({ message: "Login successful", token });
+    }
+  } catch (error) {
+    console.error("Sign-in error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  console.log("User found:", user);
-
-  const token = jwt.sign(
-      { userId: user.id },
-      appConfig.jwtSecret,
-      { expiresIn: appConfig.jwtExpiry }
-    );
-
-    res.status(200).json({ message: "Login successful", token });
 });
 
 authRouter.post("/signout", (req, res, next) => {
