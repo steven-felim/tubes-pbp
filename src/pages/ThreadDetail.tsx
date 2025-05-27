@@ -4,14 +4,14 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 type Post = {
   id: number;
   content: string;
-  userName?: string;
+  name?: string;
   replies?: Post[];
 };
 
 type Thread = {
   title: string;
   content: string;
-  userName?: string;
+  name?: string;
   replies: Post[];
 };
 
@@ -28,22 +28,22 @@ const ThreadDetail = () => {
     setThread({
       title: "How to build a responsive navbar?",
       content: "Looking for suggestions on building a responsive navbar with React...",
-      userName: "John Doe",
+      name: "John Doe",
       replies: [
         {
           id: 1,
           content: "You can use CSS Flexbox for the layout.",
-          userName: "Alice",
+          name: "Alice",
           replies: [
             {
               id: 2,
               content: "Agreed! Especially with Tailwind, it’s simple.",
-              userName: "Bob",
+              name: "Bob",
               replies: [
                 {
                   id: 3,
                   content: "Tailwind's 'flex' classes are so handy!",
-                  userName: "Charlie",
+                  name: "Charlie",
                 },
               ],
             },
@@ -52,13 +52,13 @@ const ThreadDetail = () => {
         {
           id: 4,
           content: "Consider using a library like React Router for navigation.",
-          userName: "Dave",
+          name: "Dave",
           replies: [],
         },
         {
           id: 5,
           content: "Don't forget about accessibility features!",
-          userName: "Eve",
+          name: "Eve",
           replies: [],
         }
       ],
@@ -87,7 +87,7 @@ const ThreadDetail = () => {
         className="bg-white p-4 rounded-lg shadow-md mt-2"
         style={{ marginLeft: `${depth * 20}px` }}
       >
-        <p className="font-semibold text-gray-800">{post.userName || "Unknown User"}</p>
+        <p className="font-semibold text-gray-800">{post.name || "Unknown User"}</p>
         <p className="text-gray-700">{post.content}</p>
 
         {isLoggedIn && (
@@ -166,8 +166,8 @@ const ThreadDetail = () => {
           <>
             <div className="mb-6">
               <h2 className="text-3xl font-bold text-gray-900">{thread.title}</h2>
-              {thread.userName && (
-                <p className="text-sm text-gray-500">Posted by {thread.userName}</p>
+              {thread.name && (
+                <p className="text-sm text-gray-500">Posted by {thread.name}</p>
               )}
               <p className="mt-2 text-gray-600">{thread.content}</p>
             </div>

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const EditProfile = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -38,7 +38,7 @@ const EditProfile = () => {
         });
         if (res.ok) {
           const data = await res.json();
-          setUsername(data.username || "");
+          setName(data.name || "");
           setEmail(data.email || "");
           // Optional: store bio or other fields too
         } else {
@@ -82,12 +82,12 @@ const EditProfile = () => {
         <h2 className="text-3xl font-bold text-center text-gray-900 mb-6">Edit Profile</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="username" className="block text-gray-700">Username</label>
+            <label htmlFor="name" className="block text-gray-700">name</label>
             <input
               type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="mt-2 p-3 w-full border border-gray-300 rounded-md"
               required
             />

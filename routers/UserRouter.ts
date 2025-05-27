@@ -22,8 +22,8 @@ userRouter.get("/me", loadCurrentUser, (req: AuthenticatedRequest, res: Response
 
 userRouter.put("/me", loadCurrentUser, async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const { username, bio } = req.body;
-        await req.dbUser!.update({ username, bio });
+        const { name, bio } = req.body;
+        await req.dbUser!.update({ name, bio });
         res.json(req.dbUser);
     } catch {
         res.status(500).json({ error: "Internal server error" });

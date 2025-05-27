@@ -10,7 +10,7 @@ const api = axios.create({
 export const authService = {
   login: (credentials: { email: string; password: string }) => 
     api.post('/signin', credentials),
-  register: (userData: { username: string; email: string; password: string }) =>
+  register: (userData: { name: string; email: string; password: string }) =>
     api.post('/signup', userData),
 };
 

@@ -19,13 +19,28 @@ authRouter.post("/signup", (req, res, next) => {
     next(new Error("User already exists"));
     return;
   }
+  
   const newUser: User = {
     id: v4(),
     name: name,
     email: email,
     password: password,
   };
+
+  const token = jwt.sign(
+    { userId: newUser.id },
+    appConfig.jwtSecret,
+    { expiresIn: appConfig.jwtExpiry }
+  );
+
+  res.status(201).json({
+    message: "Registration successful",
+    token,
+    user: newUser,
+  });
+
   users.push(newUser);
+  console.log("Incoming signup data:", req.body);
   res.status(201).json(newUser);
 });
 
