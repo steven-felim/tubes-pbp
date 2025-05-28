@@ -27,6 +27,8 @@ postRouter.get("/", async (req, res) => {
       name: post.user?.name ?? "Anonymous",
       refId: post.refId,
       threadId: post.threadId,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
     }));
 
     res.status(200).json(postsWithNames);
