@@ -16,16 +16,22 @@ const SignIn = () => {
         password,
       }, { withCredentials: true });
 
-      console.log("Logged in user:", response.data);
-      localStorage.setItem("token", response.data.token);
-      
-      navigate("/"); // Redirect after storing session
+      const token = response.data.token;
+      localStorage.setItem("token", token);
+
+      const meRes = await axios.get("http://localhost:3000/api/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      localStorage.setItem("userId", meRes.data.id);
+      localStorage.setItem("userName", meRes.data.name);
+
+      navigate("/");
     } catch (error) {
       alert("Login failed. Please check your credentials.");
       console.error(error);
     }
   };
-
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">

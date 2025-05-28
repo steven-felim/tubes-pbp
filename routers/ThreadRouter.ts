@@ -1,5 +1,6 @@
 import express from "express";
 import { Thread } from "../models/Thread";
+import { User } from "../models/User";
 import { Category } from "../models/Category";
 import { ThreadCategory } from "../models/ThreadCategory";
 import { authorizationMiddleware } from "../middlewares/authorizationMiddleware";
@@ -36,20 +37,36 @@ threadRouter.get("/category/:categoryId", async (req, res) => {
 threadRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const thread = await Thread.findByPk(id, { include: [Category] });
+    const thread = await Thread.findByPk(id, {
+      include: [
+        { model: Category },
+        { model: User, attributes: ["name"] },
+      ],
+    });
+
     if (!thread) {
       res.status(404).json({ error: "Thread not found" });
       return;
     }
-    res.status(200).json(thread);
+
+    const threadData = {
+      id: thread.id,
+      title: thread.title,
+      content: thread.content,
+      name: thread.user.name ?? "Anonymous",
+      userId: thread.userId,
+      categories: thread.categories.map((cat) => cat.name),
+      createdAt: thread.createdAt,
+      updatedAt: thread.updatedAt,
+    };
+
+    res.status(200).json(threadData);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
 });
 
 threadRouter.post("/", authorizationMiddleware, async (req, res) => {
-  console.log("✅ /api/threads POST route hit")
-
   const { title, content, categoryNames } = req.body;
   const user = res.locals.user;
   const userId = user.id;

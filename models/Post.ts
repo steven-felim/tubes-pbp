@@ -39,9 +39,6 @@ export class Post extends Model {
     })
     declare refId: string;
 
-    @BelongsTo(() => Post, "refId")
-    declare ref: Post;
-
     @Column({
         allowNull: false,
         type: DataType.STRING,
