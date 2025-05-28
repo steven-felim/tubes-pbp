@@ -29,6 +29,8 @@ const SignUp = () => {
 
       const token = response.data;
       localStorage.setItem("token", token);
+      localStorage.setItem("userId", response.data.id);
+      localStorage.setItem("userName", response.data.name);
 
       alert("Registration successful!");
       console.log(response.data);

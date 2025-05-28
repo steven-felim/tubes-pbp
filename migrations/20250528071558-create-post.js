@@ -30,13 +30,8 @@ export async function up(queryInterface, Sequelize) {
     },
     refId: {
       type: Sequelize.UUID,
-      allowNull: true,
-      references: {
-        model: 'Post',
-        key: 'id',
-      },
-      onUpdate: 'CASCADE',
-      onDelete: 'SET NULL',
+      allowNull: false, // make this NOT NULL since you always want a refId (threadId or postId)
+      // NO foreign key constraint here!
     },
     content: {
       type: Sequelize.TEXT,
@@ -54,6 +49,7 @@ export async function up(queryInterface, Sequelize) {
     },
   });
 }
+
 export async function down(queryInterface, Sequelize) {
   await queryInterface.dropTable('Post');
 }

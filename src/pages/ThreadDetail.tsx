@@ -19,91 +19,62 @@ type Thread = {
   replies: PostWithReplies[];
 };
 
-
 const ThreadDetail = () => {
   const { threadId } = useParams();
+
   const navigate = useNavigate();
   const isLoggedIn = !!localStorage.getItem("token");
+  const currentUserId = localStorage.getItem("userId");
 
   const [thread, setThread] = useState<Thread | null>(null);
   const [comment, setComment] = useState("");
-  const [replyToId, setReplyToId] = useState<string | null>(null);
+  const [replyToPostId, setReplyToPostId] = useState<string | null>(null);
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
 
+  const fetchThreadAndPosts = async () => {
+    try {
+      const threadRes = await fetch(`http://localhost:3000/api/threads/${threadId}`);
+      const threadData = await threadRes.json();
+      console.log("Thread data:", threadData);
+
+      const postRes = await fetch(`http://localhost:3000/api/threads/${threadId}/posts`);
+      const postData = await postRes.json();
+      console.log("Post data:", postData);
+
+      if (!Array.isArray(postData)) {
+        throw new Error("Post data is not an array");
+      }
+
+      const buildNestedPosts = (posts: Post[], parentId: string | null): PostWithReplies[] =>
+        posts
+          .filter((p) => (parentId === null ? p.refId === threadId : p.refId === parentId))
+          .map((p) => ({ ...p, replies: buildNestedPosts(posts, p.id) }));
+
+
+      const nestedReplies = buildNestedPosts(postData, null);
+
+      console.log("Nested replies:", nestedReplies);
+
+      setThread({
+        title: threadData.title,
+        content: threadData.content,
+        name: threadData.name ?? "Anonymous",
+        replies: nestedReplies,
+      });
+    } catch (err) {
+      console.error("Error fetching thread or posts:", err);
+      setThread(null);
+    }
+  };
+
   useEffect(() => {
-    const threadId = "thread-123";
-
-    const flatPosts = [
-      {
-        id: "1",
-        content: "You can use CSS Flexbox for the layout.",
-        userId: "user-1",
-        name: "Alice",
-        refId: "thread", // means top-level comment
-        threadId,
-      },
-      {
-        id: "2",
-        content: "Agreed! Especially with Tailwind, it’s simple.",
-        userId: "user-2",
-        name: "Bob",
-        refId: "1", // reply to post ID 1
-        threadId,
-      },
-      {
-        id: "3",
-        content: "Tailwind's 'flex' classes are so handy!",
-        userId: "user-3",
-        name: "Charlie",
-        refId: "2", // reply to post ID 2
-        threadId,
-      },
-      {
-        id: "4",
-        content: "Consider using a library like React Router for navigation.",
-        userId: "user-4",
-        name: "Dave",
-        refId: "thread", // top-level
-        threadId,
-      },
-      {
-        id: "5",
-        content: "Don't forget about accessibility features!",
-        userId: "user-5",
-        name: "Eve",
-        refId: "thread", // top-level
-        threadId,
-      },
-    ];
-    
-    // Convert flat structure to nested
-    const buildNestedPosts = (
-      posts: Post[],
-      parentId: string
-    ): PostWithReplies[] => {
-      return posts
-        .filter((post) => post.refId === parentId)
-        .map((post) => ({
-          ...post,
-          replies: buildNestedPosts(posts, post.id),
-        }));
-    };
-
-    const nestedPosts = buildNestedPosts(flatPosts, "thread");
-
-    setThread({
-      title: "How to build a responsive navbar?",
-      content: "Looking for suggestions on building a responsive navbar with React...",
-      name: "John Doe",
-      replies: nestedPosts,
-    });
+    if (threadId) fetchThreadAndPosts();
   }, [threadId]);
 
-
-  const handleCommentSubmit = (
+  const handleCommentSubmit = async (
     e: React.FormEvent<HTMLFormElement>,
-    parentId: string | null = null
+    replyTo: string | null
   ) => {
     e.preventDefault();
 
@@ -114,78 +85,95 @@ const ThreadDetail = () => {
 
     if (!comment.trim()) return;
 
-    const newPost: PostWithReplies = {
-      id: Date.now().toString(),
-      content: comment,
-      name: "Current User", // Replace with actual user name
-      userId: "current-user-id", // Replace with actual user ID
-      refId: parentId ?? "thread",
-      threadId: threadId ?? "",
-      replies: [],
-    };
+    if (!threadId) {
+      console.error("No threadId found in URL params.");
+      return;
+    }
 
-    const addReply = (posts: PostWithReplies[]): PostWithReplies[] => {
-      return posts.map((p) => {
-        if (p.id === parentId) {
-          return { ...p, replies: [...p.replies, newPost] };
-        } else {
-          return { ...p, replies: addReply(p.replies) };
-        }
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`http://localhost:3000/api/threads/${threadId}/posts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({
+          threadId: threadId,
+          content: comment.trim(),
+          refId: replyTo ? replyTo : threadId,
+        }),
       });
-    };
 
-    setThread((prev) => {
-      if (!prev) return prev;
-
-      if (!parentId) {
-        return { ...prev, replies: [...prev.replies, newPost] };
-      } else {
-        return { ...prev, replies: addReply(prev.replies) };
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to post comment: ${errorText}`);
       }
-    });
 
-    setComment("");
-    setReplyToId(null);
+      setComment("");
+      setReplyToPostId(null);
+
+      await fetchThreadAndPosts();
+
+    } catch (err) {
+      console.error("Error posting comment:", err);
+    }
   };
-
 
   const handleEdit = (postId: string, currentContent: string) => {
     setEditingPostId(postId);
     setEditContent(currentContent);
   };
 
-  const handleSaveEdit = (postId: string) => {
-    const updateReplies = (posts: PostWithReplies[]): PostWithReplies[] => {
-      return posts.map((p) => {
-        if (p.id === postId) {
-          return { ...p, content: editContent };
-        } else {
-          return { ...p, replies: updateReplies(p.replies) };
-        }
+  const handleSaveEdit = async (postId: string) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`http://localhost:3000/api/threads/${threadId}/posts/${postId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({ content: editContent }),
       });
-    };
 
-    setThread((prev) =>
-      prev ? { ...prev, replies: updateReplies(prev.replies) } : prev
-    );
-    setEditingPostId(null);
-    setEditContent("");
+      if (!res.ok) throw new Error("Failed to update post");
+
+      setEditingPostId(null);
+      setEditContent("");
+      await fetchThreadAndPosts();
+
+    } catch (err) {
+      console.error("Edit error:", err);
+    }
   };
 
-  const handleDelete = (postId: string) => {
-    const deletePost = (posts: PostWithReplies[]): PostWithReplies[] => {
-      return posts
-        .filter((p) => p.id !== postId)
-        .map((p) => ({ ...p, replies: deletePost(p.replies) }));
-    };
+  const handleDelete = async (postId: string) => {
+    try {
+      const token = localStorage.getItem("token");
 
-    setThread((prev) =>
-      prev ? { ...prev, replies: deletePost(prev.replies) } : prev
-    );
+      const res = await fetch(`http://localhost:3000/api/threads/${threadId}/posts/${postId}`, {
+        method: "DELETE",
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to delete post");
+
+      await fetchThreadAndPosts();
+
+    } catch (err) {
+      console.error("Delete error:", err);
+    }
   };
-
+  
   const renderPost = (posts: PostWithReplies[], depth = 0): React.JSX.Element[] => {
     return posts.map((post) => (
+      console.log("Post userId:", post.userId, "Current userId:", currentUserId),
+
       <div
         key={post.id}
         className="bg-white p-4 rounded-lg shadow-md mt-2"
@@ -226,31 +214,32 @@ const ThreadDetail = () => {
 
             {isLoggedIn && (
               <div className="flex gap-3 mt-2 text-sm">
-                <button
-                  onClick={() => setReplyToId(post.id)}
-                  className="text-blue-600 hover:underline"
-                >
+                <button onClick={() => setReplyToPostId(post.id)} className="text-blue-600 hover:underline">
                   Reply
                 </button>
-                <button
-                  onClick={() => handleEdit(post.id, post.content)}
-                  className="text-yellow-600 hover:underline"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(post.id)}
-                  className="text-red-600 hover:underline"
-                >
-                  Delete
-                </button>
+                {post.userId === currentUserId && (
+                  <>
+                    <button onClick={() => handleEdit(post.id, post.content)} className="text-yellow-600 hover:underline">
+                      Edit
+                    </button>
+                    <button onClick={() => handleDelete(post.id)} className="text-red-600 hover:underline">
+                      Delete
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </>
         )}
 
+        {!thread && (
+          <p className="text-red-500 text-center mt-8">
+            Failed to load thread or posts. Check console for details.
+          </p>
+        )}
+
         {/* Reply form */}
-        {replyToId === post.id && isLoggedIn && (
+        {replyToPostId === post.id && isLoggedIn && (
           <form onSubmit={(e) => handleCommentSubmit(e, post.id)} className="mt-2">
             <textarea
               value={comment}
@@ -269,7 +258,7 @@ const ThreadDetail = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setReplyToId(null);
+                  setReplyToPostId(null);
                   setComment("");
                 }}
                 className="ml-2 text-sm text-gray-500 hover:underline"
@@ -284,6 +273,7 @@ const ThreadDetail = () => {
         {post.replies && renderPost(post.replies, depth + 1)}
       </div>
     ));
+    
   };
 
   return (
@@ -339,8 +329,8 @@ const ThreadDetail = () => {
             <div className="space-y-4">{renderPost(thread.replies)}</div>
 
             {isLoggedIn ? (
-              replyToId === null && (
-                <form onSubmit={(e) => handleCommentSubmit(e)} className="mt-6">
+              replyToPostId === null && (
+                <form onSubmit={(e) => handleCommentSubmit(e, null)} className="mt-6">
                   <textarea
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}

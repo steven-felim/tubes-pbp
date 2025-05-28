@@ -44,6 +44,7 @@ app.use("/api/threads/:threadId/posts", postRouter);
 app.use("/api", userRouter);
 app.use("/api", authRouter);
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error("Error:", err.message);
   res.status(400).json({ message: err.message });
