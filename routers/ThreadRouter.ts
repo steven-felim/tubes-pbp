@@ -48,8 +48,6 @@ threadRouter.get("/:id", async (req, res) => {
 });
 
 threadRouter.post("/", authorizationMiddleware, async (req, res) => {
-  console.log("✅ /api/threads POST route hit")
-
   const { title, content, categoryNames } = req.body;
   const user = res.locals.user;
   const userId = user.id;
