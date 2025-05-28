@@ -60,6 +60,11 @@ const Home = () => {
               <Link to="/about" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
                 About
               </Link>
+              {!isLoggedIn && (
+                <Link to="/SignIn" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
+                  SignIn
+                </Link>
+              )}
               {isLoggedIn && (
                 <Link to="/me" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">
                   Profile
