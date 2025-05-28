@@ -87,6 +87,25 @@ const ThreadDetail = () => {
     if (threadId) fetchThreadAndPosts();
   }, [threadId]);
 
+  const handleThreadDelete = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      
+      const res = await fetch(`http://localhost:3000/api/threads/${threadId}`, {
+        method: "DELETE",
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to delete thread");
+
+      navigate("/"); // Redirect ke home setelah delete
+    } catch (err) {
+      console.error("Thread delete error:", err);
+    }
+  };
+
   const handleThreadUpdate = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -395,16 +414,24 @@ const ThreadDetail = () => {
 
                   {/* Show edit button only for the original poster */}
                   {thread.userId && currentUserId && thread.userId === currentUserId && (
-                    <button
-                      onClick={() => {
-                        setEditTitle(thread.title);
-                        setEditThreadContent(thread.content);
-                        setIsEditingThread(true);
-                      }}
-                      className="mt-2 text-sm text-blue-600 hover:underline"
-                    >
-                      Edit Thread
-                    </button>
+                    <div className="mt-2 space-x-4">
+                      <button
+                        onClick={() => {
+                          setEditTitle(thread.title);
+                          setEditThreadContent(thread.content);
+                          setIsEditingThread(true);
+                        }}
+                        className="text-sm text-blue-600 hover:underline"
+                      >
+                        Edit Thread
+                      </button>
+                      <button
+                        onClick={handleThreadDelete}
+                        className="text-sm text-red-600 hover:underline"
+                      >
+                        Delete Thread
+                      </button>
+                    </div>
                   )}
                 </>
               )}
