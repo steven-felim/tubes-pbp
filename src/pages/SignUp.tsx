@@ -27,14 +27,13 @@ const SignUp = () => {
         withCredentials: true,
       });
 
-      const token = response.data;
+      const { token, user } = response.data;
+
       localStorage.setItem("token", token);
-      localStorage.setItem("userId", response.data.id);
-      localStorage.setItem("userName", response.data.name);
+      localStorage.setItem("userId", user.id);
+      localStorage.setItem("userName", user.name);
 
       alert("Registration successful!");
-      console.log(response.data);
-
       navigate("/");
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -46,7 +45,6 @@ const SignUp = () => {
       }
     }
   };
-
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
