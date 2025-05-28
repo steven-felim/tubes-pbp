@@ -18,6 +18,8 @@ const SignIn = () => {
 
       console.log("Logged in user:", response.data);
       localStorage.setItem("token", response.data.token);
+      localStorage.setItem("userId", response.data.id);
+      localStorage.setItem("userName", response.data.name);
       
       navigate("/"); // Redirect after storing session
     } catch (error) {

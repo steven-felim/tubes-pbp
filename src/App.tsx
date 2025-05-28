@@ -19,7 +19,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/me" element={<Profile />} />
         <Route path="/threads" element={<Threads />} />
-        <Route path="/threads/:id" element={<ThreadDetail />} />
+        <Route path="/threads/:threadId" element={<ThreadDetail />} />
         <Route path="/ask" element={<CreateThread />} />
         {/* Add any additional routes here */}
       </Routes>
