@@ -1,4 +1,3 @@
-// src/App.tsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import SignIn from "./pages/SignIn";
@@ -29,7 +28,6 @@ function App() {
         <Route path="/threads" element={<Threads />} />
         <Route path="/threads/:threadId" element={<ThreadDetail />} />
         <Route path="/ask" element={<CreateThread />} />
-        {/* Add any additional routes here */}
       </Routes>
     </Router>
   );
