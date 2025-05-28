@@ -45,11 +45,9 @@ const ThreadDetail = () => {
     try {
       const threadRes = await fetch(`http://localhost:3000/api/threads/${threadId}`);
       const threadData = await threadRes.json();
-      console.log("Thread data:", threadData);
 
       const postRes = await fetch(`http://localhost:3000/api/threads/${threadId}/posts`);
       const postData = await postRes.json();
-      console.log("Post data:", postData);
 
       if (!Array.isArray(postData)) {
         throw new Error("Post data is not an array");
@@ -64,8 +62,6 @@ const ThreadDetail = () => {
           }));
 
       const nestedReplies = buildNestedPosts(postData, null);
-
-      console.log("Nested replies:", nestedReplies);
 
       setThread({
         title: threadData.title,

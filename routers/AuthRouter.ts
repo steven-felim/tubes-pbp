@@ -39,8 +39,6 @@ authRouter.post("/signup", async (req, res) => {
 });
 
 authRouter.post("/signin", async (req, res) => {
-  console.log("Signin attempt:", req.body);
-
   const { email, password } = req.body;
 
   try {
@@ -66,7 +64,6 @@ authRouter.post("/signin", async (req, res) => {
 });
 
 authRouter.post("/signout", (req, res, next) => {
-  // Invalidate the token on the client side
   req.headers.authorization = undefined;
   res.status(200).json({ message: "Logout successful" });
   next();

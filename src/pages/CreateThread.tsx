@@ -13,7 +13,6 @@ const CreateThread = () => {
   const [newCategory, setNewCategory] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
 
-  // Fetch categories from the API
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -66,9 +65,6 @@ const CreateThread = () => {
         throw new Error(errorData.error || "Failed to create thread");
       }
 
-      const result = await response.json();
-      console.log("Thread created:", result);
-
       if (trimmedNewCategory && !categories.some(c => c.name === trimmedNewCategory)) {
         setCategories((prev) => [...prev, { name: trimmedNewCategory }]);
       }
@@ -86,7 +82,6 @@ const CreateThread = () => {
       }
       alert("Failed to create thread.");
     }
-
   };
 
   return (

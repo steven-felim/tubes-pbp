@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { appConfig } from "../config/app";
-import { User } from "../models/User"; // adjust to your path
+import { User } from "../models/User";
 
 export async function authorizationMiddleware(
   req: Request,
@@ -11,7 +11,7 @@ export async function authorizationMiddleware(
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
   if (!token) {
-    res.sendStatus(401); // Unauthorized
+    res.sendStatus(401);
     return;
   }
   try {
@@ -23,7 +23,7 @@ export async function authorizationMiddleware(
     }
 
     const user = await User.findByPk(userId, {
-      attributes: { exclude: ["password"] }, // exclude sensitive fields
+      attributes: { exclude: ["password"] },
     });
 
     if (!user) {
