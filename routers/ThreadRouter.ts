@@ -1,6 +1,7 @@
 import express from "express";
 import { Thread } from "../models/Thread";
 import { Category } from "../models/Category";
+import { ThreadCategory } from "../models/ThreadCategory";
 import { authorizationMiddleware } from "../middlewares/authorizationMiddleware";
 
 export const threadRouter = express.Router();
@@ -47,11 +48,14 @@ threadRouter.get("/:id", async (req, res) => {
 });
 
 threadRouter.post("/", authorizationMiddleware, async (req, res) => {
-  const { title, content, categoryIds } = req.body; // categoryIds = array of category names (e.g., ["General", "DevOps"])
-  const user = res.locals.user;
+  console.log("✅ /api/threads POST route hit")
 
-  if (!user) {
-    res.status(401).json({ error: "Unauthorized" });
+  const { title, content, categoryNames } = req.body;
+  const user = res.locals.user;
+  const userId = user.id;
+
+  if (!title || !content || !categoryNames || !Array.isArray(categoryNames)) {
+    res.status(400).json({ error: "Invalid thread data" });
     return;
   }
 
@@ -59,31 +63,33 @@ threadRouter.post("/", authorizationMiddleware, async (req, res) => {
     const thread = await Thread.create({
       title,
       content,
-      userId: user.id,
+      userId,
     });
 
-    if (Array.isArray(categoryIds) && categoryIds.length > 0) {
-      const categories = await Promise.all(
-        categoryIds.map(async (name: string) => {
-          const [category] = await Category.findOrCreate({ where: { name } });
-          return category;
-        })
-      );
+    for (const name of categoryNames) {
+      if (typeof name !== "string") continue;
 
-      await thread.$set("categories", categories);
+      const trimmedName = name.trim();
+      if (!trimmedName) continue;
+
+      const [category] = await Category.findOrCreate({
+        where: { name: trimmedName },
+        defaults: { name: trimmedName },
+      });
+
+      await ThreadCategory.create({
+        threadId: thread.id,
+        categoryName: category.name,
+      });
     }
 
-    const fullThread = await Thread.findByPk(thread.id, {
-      include: [Category],
-    });
-
-    res.status(201).json(fullThread);
+    res.status(201).json(thread);
   } catch (err) {
     console.error("Thread creation error:", err);
-    res.status(500).json({ error: "Failed to create thread." });
+    res.status(500).json({ error: "Failed to create thread" });
   }
 });
-
+ 
 threadRouter.put("/:id", authorizationMiddleware, async (req, res) => {
   const { id } = req.params;
   const { content } = req.body;

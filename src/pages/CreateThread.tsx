@@ -1,28 +1,48 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+
+interface Category {
+  name: string;
+}
 
 const CreateThread = () => {
   const [threadTitle, setThreadTitle] = useState("");
   const [threadContent, setThreadContent] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [newCategory, setNewCategory] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
 
-  const categories = ["General", "Web Development", "Data Science", "Mobile Development", "DevOps"];
+  // Fetch categories from the API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get<Category[]>("http://localhost:3000/api/categories");
+        setCategories(response.data);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
 
-  const handleCategoryChange = (category: string) => {
+    fetchCategories();
+  }, []);
+
+  const handleCategoryChange = (categoryName: string) => {
     setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((cat) => cat !== category)
-        : [...prev, category]
+      prev.includes(categoryName)
+        ? prev.filter((name) => name !== categoryName)
+        : [...prev, categoryName]
     );
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const trimmedNewCategory = newCategory.trim();
     const finalCategories = [...selectedCategories];
-    if (newCategory.trim() && !finalCategories.includes(newCategory.trim())) {
-      finalCategories.push(newCategory.trim());
+
+    if (trimmedNewCategory && !finalCategories.includes(trimmedNewCategory)) {
+      finalCategories.push(trimmedNewCategory);
     }
 
     try {
@@ -37,7 +57,7 @@ const CreateThread = () => {
         body: JSON.stringify({
           title: threadTitle,
           content: threadContent,
-          categoryIds: finalCategories,
+          categoryNames: finalCategories,
         }),
       });
 
@@ -49,16 +69,24 @@ const CreateThread = () => {
       const result = await response.json();
       console.log("Thread created:", result);
 
-      // Optionally redirect or show success message
+      if (trimmedNewCategory && !categories.some(c => c.name === trimmedNewCategory)) {
+        setCategories((prev) => [...prev, { name: trimmedNewCategory }]);
+      }
+
       setThreadTitle("");
       setThreadContent("");
       setSelectedCategories([]);
       setNewCategory("");
       alert("Thread created successfully!");
     } catch (err) {
-      console.error("Error creating thread:", err);
+      if (err instanceof Error) {
+        console.error("Error creating thread:", err.message);
+      } else {
+        console.error("Unknown error creating thread:", err);
+      }
       alert("Failed to create thread.");
     }
+
   };
 
   return (
@@ -67,9 +95,7 @@ const CreateThread = () => {
       <nav className="bg-gray-800 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link to="/" className="text-white text-xl font-semibold">
-              ForumKode
-            </Link>
+            <Link to="/" className="text-white text-xl font-semibold">ForumKode</Link>
             <div className="flex space-x-4">
               <Link to="/ask" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Ask Question</Link>
               <Link to="/about" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">About</Link>
@@ -110,13 +136,13 @@ const CreateThread = () => {
             <label className="block text-gray-700">Select Existing Categories</label>
             <div className="mt-2 flex flex-wrap gap-4">
               {categories.map((category) => (
-                <label key={category} className="flex items-center gap-2">
+                <label key={category.name} className="flex items-center gap-2">
                   <input
                     type="checkbox"
-                    checked={selectedCategories.includes(category)}
-                    onChange={() => handleCategoryChange(category)}
+                    checked={selectedCategories.includes(category.name)}
+                    onChange={() => handleCategoryChange(category.name)}
                   />
-                  {category}
+                  {category.name}
                 </label>
               ))}
             </div>

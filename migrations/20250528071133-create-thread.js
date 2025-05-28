@@ -38,6 +38,15 @@ export async function up(queryInterface, Sequelize) {
     },
   });
 
+  await queryInterface.createTable('Category', {
+    name: {
+      type: Sequelize.STRING,
+      primaryKey: true,
+      allowNull: false,
+      unique: true,
+    },
+  });
+
   await queryInterface.createTable('ThreadCategory', {
     threadId: {
       type: Sequelize.UUID,
@@ -53,6 +62,7 @@ export async function up(queryInterface, Sequelize) {
     categoryName: {
       type: Sequelize.STRING,
       allowNull: false,
+      primaryKey: true,
       references: {
         model: 'Category',
         key: 'name',
