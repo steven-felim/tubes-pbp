@@ -38,13 +38,11 @@ app.use(cors({
 }));
 app.use(json());
 
-// Perbaikan route yang benar
-app.use("/api", userRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/threads", threadRouter);
 app.use("/api/posts", postRouter);
+app.use("/api", userRouter);
 app.use("/api", authRouter);
-
 
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error("Error:", err.message);
