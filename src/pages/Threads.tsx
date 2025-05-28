@@ -64,6 +64,9 @@ const AllThreads = () => {
               {isLoggedIn && (
                 <Link to="/me" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Profile</Link>
               )}
+              {!isLoggedIn && (
+                <Link to="/SignIn" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">SignIn</Link>
+              )}
             </div>
           </div>
         </div>

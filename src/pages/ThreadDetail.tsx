@@ -8,6 +8,8 @@ type Post = {
   name?: string;
   refId?: string;
   threadId?: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 type PostWithReplies = Post & { replies: PostWithReplies[] };
@@ -15,7 +17,10 @@ type PostWithReplies = Post & { replies: PostWithReplies[] };
 type Thread = {
   title: string;
   content: string;
+  userId?: string;
   name?: string;
+  createdAt?: string;
+  updatedAt?: string;
   replies: PostWithReplies[];
 };
 
@@ -31,6 +36,10 @@ const ThreadDetail = () => {
   const [replyToPostId, setReplyToPostId] = useState<string | null>(null);
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
+
+  const [isEditingThread, setIsEditingThread] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editThreadContent, setEditThreadContent] = useState("");
 
   const fetchThreadAndPosts = async () => {
     try {
@@ -49,8 +58,10 @@ const ThreadDetail = () => {
       const buildNestedPosts = (posts: Post[], parentId: string | null): PostWithReplies[] =>
         posts
           .filter((p) => (parentId === null ? p.refId === threadId : p.refId === parentId))
-          .map((p) => ({ ...p, replies: buildNestedPosts(posts, p.id) }));
-
+          .map((p) => ({
+            ...p,
+            replies: buildNestedPosts(posts, p.id),
+          }));
 
       const nestedReplies = buildNestedPosts(postData, null);
 
@@ -60,8 +71,12 @@ const ThreadDetail = () => {
         title: threadData.title,
         content: threadData.content,
         name: threadData.name ?? "Anonymous",
+        userId: threadData.userId,
+        createdAt: threadData.createdAt, 
+        updatedAt: threadData.updatedAt, 
         replies: nestedReplies,
       });
+
     } catch (err) {
       console.error("Error fetching thread or posts:", err);
       setThread(null);
@@ -71,6 +86,28 @@ const ThreadDetail = () => {
   useEffect(() => {
     if (threadId) fetchThreadAndPosts();
   }, [threadId]);
+
+  const handleThreadUpdate = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`http://localhost:3000/api/threads/${threadId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({ title: editTitle, content: editThreadContent }),
+      });
+
+      if (!res.ok) throw new Error("Failed to update thread");
+
+      setIsEditingThread(false);
+      await fetchThreadAndPosts();
+    } catch (err) {
+      console.error("Thread update error:", err);
+    }
+  };
 
   const handleCommentSubmit = async (
     e: React.FormEvent<HTMLFormElement>,
@@ -180,6 +217,14 @@ const ThreadDetail = () => {
         style={{ marginLeft: depth * 20 }}
       >
         <p className="font-semibold text-gray-800">{post.name || "Unknown User"}</p>
+        <p className="text-sm text-gray-500">
+          Posted on {post.createdAt && new Date(post.createdAt).toLocaleDateString()}
+          {post.updatedAt && post.createdAt && post.updatedAt !== post.createdAt && (
+            <span className="italic text-gray-400">
+              {" "} (edited on {new Date(post.updatedAt).toLocaleDateString()})
+            </span>
+          )}
+        </p>
 
         {/* Editable area */}
         {editingPostId === post.id ? (
@@ -289,26 +334,14 @@ const ThreadDetail = () => {
             </div>
             <div className="flex space-x-4">
               {isLoggedIn && (
-                <Link
-                  to="/ask"
-                  className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Ask Question
-                </Link>
+                <Link to="/ask" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Ask Question</Link>
               )}
-              <Link
-                to="/about"
-                className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                About
-              </Link>
+              <Link to="/about" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">About</Link>
               {isLoggedIn && (
-                <Link
-                  to="/me"
-                  className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Profile
-                </Link>
+                <Link to="/me" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Profile</Link>
+              )}
+              {!isLoggedIn && (
+                <Link to="/SignIn" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">SignIn</Link>
               )}
             </div>
           </div>
@@ -319,11 +352,62 @@ const ThreadDetail = () => {
         {thread && (
           <>
             <div className="mb-6">
-              <h2 className="text-3xl font-bold text-gray-900">{thread.title}</h2>
-              {thread.name && (
-                <p className="text-sm text-gray-500">Posted by {thread.name}</p>
+              {isEditingThread ? (
+                <>
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="w-full text-3xl font-bold text-gray-900 mb-2 border p-2 rounded"
+                  />
+                  <textarea
+                    value={editThreadContent}
+                    onChange={(e) => setEditThreadContent(e.target.value)}
+                    rows={4}
+                    className="w-full border p-2 rounded mb-2"
+                  />
+                  <button
+                    onClick={handleThreadUpdate}
+                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => setIsEditingThread(false)}
+                    className="ml-2 text-sm text-gray-500 hover:underline"
+                  >
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-3xl font-bold text-gray-900">{thread.title}</h2>
+                  <p className="text-sm text-gray-500">
+                    Posted by {thread.name} on{" "}
+                    {thread.createdAt && new Date(thread.createdAt).toLocaleDateString()}
+                    {thread.updatedAt && thread.createdAt && thread.updatedAt !== thread.createdAt && (
+                      <span className="italic text-gray-400">
+                        {" "} (edited on {new Date(thread.updatedAt).toLocaleDateString()})
+                      </span>
+                    )} 
+                  </p>
+                  <p className="mt-2 text-gray-600">{thread.content}</p>
+
+                  {/* Show edit button only for the original poster */}
+                  {thread.userId && currentUserId && thread.userId === currentUserId && (
+                    <button
+                      onClick={() => {
+                        setEditTitle(thread.title);
+                        setEditThreadContent(thread.content);
+                        setIsEditingThread(true);
+                      }}
+                      className="mt-2 text-sm text-blue-600 hover:underline"
+                    >
+                      Edit Thread
+                    </button>
+                  )}
+                </>
               )}
-              <p className="mt-2 text-gray-600">{thread.content}</p>
             </div>
 
             <div className="space-y-4">{renderPost(thread.replies)}</div>
