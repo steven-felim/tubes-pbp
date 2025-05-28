@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { authorizationMiddleware } from "../middlewares/authorizationMiddleware";
 import jwt from "jsonwebtoken";
 import { appConfig } from "../config/app";
 import { User } from "../models/User";
@@ -27,7 +26,11 @@ authRouter.post("/signup", async (req, res) => {
     res.status(201).json({
       message: "Registration successful",
       token,
-      user: newUser,
+      user: {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+      },
     });
   } catch (err) {
     console.error("Signup error:", err);
