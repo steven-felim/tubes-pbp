@@ -4,9 +4,11 @@ import { authorizationMiddleware } from "../middlewares/authorizationMiddleware"
 
 export const postRouter = express.Router();
 
-postRouter.get("/threads/:threadId", async (req, res) => {
-    const { threadId } = req.params;
-    const posts = await Post.findAll({ where: { threadId } });
+postRouter.get("/", async (req, res) => {
+    const { threadId } = req.query;
+    const posts = threadId
+        ? await Post.findAll({ where: { threadId } })
+        : await Post.findAll();
     res.status(200).json(posts);
 });
 

@@ -40,7 +40,7 @@ app.use(json());
 
 app.use("/api/categories", categoryRouter);
 app.use("/api/threads", threadRouter);
-app.use("/api/posts", postRouter);
+app.use("/api/threads/:threadId/posts", postRouter);
 app.use("/api", userRouter);
 app.use("/api", authRouter);
 
