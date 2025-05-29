@@ -224,8 +224,6 @@ const ThreadDetail = () => {
   
   const renderPost = (posts: PostWithReplies[], depth = 0): React.JSX.Element[] => {
     return posts.map((post) => (
-      console.log("Post userId:", post.userId, "Current userId:", currentUserId),
-
       <div
         key={post.id}
         className="bg-white p-4 rounded-lg shadow-md mt-2"
