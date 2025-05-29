@@ -79,10 +79,10 @@ const ChangePassword = () => {
           </button>
           <Link
             to="/me"
-            className="ml-4 px-8 py-3 bg-gray-400 text-white font-medium rounded-lg hover:bg-gray-500 transition flex items-center justify-center"
-        >
+            className="block w-full mt-3 text-center bg-gray-300 text-gray-800 py-2 rounded hover:bg-gray-400"
+          >
             Cancel
-        </Link>
+          </Link>
         </form>
       </main>
     </div>
