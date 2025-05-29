@@ -76,6 +76,36 @@ const Profile = () => {
             </Link>
             <button
               type="button"
+              onClick={() => {
+                const password = prompt("Are you sure you want to delete your account? Please enter your password to confirm:");
+                if (password) {
+                    fetch("http://localhost:3000/api/me", {
+                    method: "DELETE",
+                    headers: {
+                      Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                    })
+                    .then(async (res) => {
+                      if (res.ok) {
+                        localStorage.removeItem("token");
+                        alert("Account deleted successfully.");
+                        navigate("/");
+                      } else {
+                        const errorMsg = await res.text();
+                        alert("Failed to delete account: " + errorMsg);
+                      }
+                    })
+                    .catch((error) => {
+                      alert("Error deleting account: " + error);
+                    });
+                }
+              }}
+              className="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800"
+            >
+              Delete Account
+            </button>
+            <button
+              type="button"
               onClick={handleSignOut}
               className="ml-4 px-8 py-3 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition flex items-center justify-center"
             >
