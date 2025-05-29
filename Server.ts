@@ -6,7 +6,6 @@ import { User } from "./models/User";
 import { Category } from "./models/Category"; 
 import { Thread } from "./models/Thread";
 import { Post } from "./models/Post";
-import { Session } from "./models/Session";
 import { ThreadCategory } from "./models/ThreadCategory";
 import config from "./config/config.json";
 import { SequelizeOptions } from "sequelize-typescript";
@@ -17,7 +16,7 @@ import cors from "cors";
 
 const sequelize = new Sequelize({
   ...config.development,
-  models: [User, Category, Thread, ThreadCategory, Post, Session],
+  models: [User, Category, Thread, ThreadCategory, Post],
 } as SequelizeOptions);
 
 sequelize.authenticate()
