@@ -81,7 +81,7 @@ const ThreadDetail = () => {
 
   useEffect(() => {
     if (threadId) fetchThreadAndPosts();
-  });
+  }, [threadId]);
 
   const handleThreadDelete = async () => {
     try {
