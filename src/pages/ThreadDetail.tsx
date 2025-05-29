@@ -96,7 +96,7 @@ const ThreadDetail = () => {
 
       if (!res.ok) throw new Error("Failed to delete thread");
 
-      navigate("/"); // Redirect ke home setelah delete
+      navigate("/");
     } catch (err) {
       console.error("Thread delete error:", err);
     }
@@ -141,7 +141,6 @@ const ThreadDetail = () => {
       console.error("No threadId found in URL params.");
       return;
     }
-
     try {
       const token = localStorage.getItem("token");
 
@@ -231,10 +230,10 @@ const ThreadDetail = () => {
       >
         {post.userId ? (
           <Link
-            to={`/user/${post.userId}`}
-            className="font-semibold text-blue-600 hover:underline"
+        to={`/user/${post.userId}`}
+        className="font-semibold text-blue-600 hover:underline"
           >
-            {post.name || "Unknown User"}
+        {post.name || "Unknown User"}
           </Link>
         ) : (
           <p className="font-semibold text-gray-800">{post.name || "Unknown User"}</p>
@@ -242,97 +241,97 @@ const ThreadDetail = () => {
         <p className="text-sm text-gray-500">
           Posted on {post.createdAt && new Date(post.createdAt).toLocaleDateString()}
           {post.updatedAt && post.createdAt && post.updatedAt !== post.createdAt && (
-            <span className="italic text-gray-400">
-              {" "} (edited on {new Date(post.updatedAt).toLocaleDateString()})
-            </span>
+        <span className="italic text-gray-400">
+          {" "} (edited on {new Date(post.updatedAt).toLocaleDateString()})
+        </span>
           )}
         </p>
 
         {/* Editable area */}
         {editingPostId === post.id ? (
           <>
-            <textarea
-              value={editContent}
-              onChange={(e) => setEditContent(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md"
-              rows={3}
-            />
-            <div className="mt-1">
-              <button
-                onClick={() => handleSaveEdit(post.id)}
-                className="px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700"
-              >
-                Save
-              </button>
-              <button
-                onClick={() => {
-                  setEditingPostId(null);
-                  setEditContent("");
-                }}
-                className="ml-2 text-sm text-gray-500 hover:underline"
-              >
-                Cancel
-              </button>
-            </div>
+        <textarea
+          value={editContent}
+          onChange={(e) => setEditContent(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded-md"
+          rows={3}
+        />
+        <div className="mt-1">
+          <button
+            onClick={() => handleSaveEdit(post.id)}
+            className="px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700"
+          >
+            Save
+          </button>
+          <button
+            onClick={() => {
+          setEditingPostId(null);
+          setEditContent("");
+            }}
+            className="ml-2 text-sm text-gray-500 hover:underline"
+          >
+            Cancel
+          </button>
+        </div>
           </>
         ) : (
           <>
-            <p className="text-gray-700">{post.content}</p>
+        <p className="text-gray-700">{post.content}</p>
 
-            {isLoggedIn && (
-              <div className="flex gap-3 mt-2 text-sm">
-                <button onClick={() => setReplyToPostId(post.id)} className="text-blue-600 hover:underline">
-                  Reply
-                </button>
-                {post.userId === currentUserId && (
-                  <>
-                    <button onClick={() => handleEdit(post.id, post.content)} className="text-yellow-600 hover:underline">
-                      Edit
-                    </button>
-                    <button onClick={() => handleDelete(post.id)} className="text-red-600 hover:underline">
-                      Delete
-                    </button>
-                  </>
-                )}
-              </div>
+        {isLoggedIn && (
+          <div className="flex gap-3 mt-2 text-sm">
+            <button onClick={() => setReplyToPostId(post.id)} className="text-blue-600 hover:underline">
+          Reply
+            </button>
+            {post.userId === currentUserId && (
+          <>
+            <button onClick={() => handleEdit(post.id, post.content)} className="text-yellow-600 hover:underline">
+              Edit
+            </button>
+            <button onClick={() => handleDelete(post.id)} className="text-red-600 hover:underline">
+              Delete
+            </button>
+          </>
             )}
+          </div>
+        )}
           </>
         )}
 
         {!thread && (
           <p className="text-red-500 text-center mt-8">
-            Failed to load thread or posts. Check console for details.
+        Failed to load thread or posts. Check console for details.
           </p>
         )}
 
         {/* Reply form */}
         {replyToPostId === post.id && isLoggedIn && (
           <form onSubmit={(e) => handleCommentSubmit(e, post.id)} className="mt-2">
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md"
-              rows={3}
-              required
-            />
-            <div className="mt-1">
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
-              >
-                Submit Reply
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setReplyToPostId(null);
-                  setComment("");
-                }}
-                className="ml-2 text-sm text-gray-500 hover:underline"
-              >
-                Cancel
-              </button>
-            </div>
+        <textarea
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded-md"
+          rows={3}
+          required
+        />
+        <div className="mt-1">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+          >
+            Submit Reply
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+          setReplyToPostId(null);
+          setComment("");
+            }}
+            className="ml-2 text-sm text-gray-500 hover:underline"
+          >
+            Cancel
+          </button>
+        </div>
           </form>
         )}
 

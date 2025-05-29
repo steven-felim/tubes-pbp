@@ -6,6 +6,7 @@ import { ThreadCategory } from "../models/ThreadCategory";
 import { authorizationMiddleware } from "../middlewares/authorizationMiddleware";
 
 export const threadRouter = express.Router();
+threadRouter.use(express.json());
 
 threadRouter.get("/", async (_req, res) => {
   try {
