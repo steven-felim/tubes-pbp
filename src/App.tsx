@@ -9,22 +9,53 @@ import ChangePassword from "./pages/ChangePassword";
 import Threads from "./pages/Threads";
 import ThreadDetail from "./pages/ThreadDetail";
 import CreateThread from "./pages/CreateThread";
+import ProtectedRoute from "./ProtectedRoute";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} /> 
+        <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/about" element={<About />} />
-        <Route path="/me" element={<Profile />} />
-        <Route path="/user/:userId" element={<Profile />} />
-        <Route path="/me/edit" element={<EditProfile />} />
-        <Route path="/me/password" element={<ChangePassword />} />
         <Route path="/threads" element={<Threads />} />
         <Route path="/threads/:threadId" element={<ThreadDetail />} />
-        <Route path="/ask" element={<CreateThread />} />
+        <Route path="/user/:userId" element={<Profile />} />
+        <Route
+          path="/me"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/me/edit"
+          element={
+            <ProtectedRoute>
+              <EditProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/me/password"
+          element={
+            <ProtectedRoute>
+              <ChangePassword />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ask"
+          element={
+            <ProtectedRoute>
+              <CreateThread />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
