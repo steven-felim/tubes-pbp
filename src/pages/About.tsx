@@ -17,12 +17,12 @@ const teamMembers: TeamMember[] = [
   {
     name: "Steven Felim",
     nim: "1123002",
-    description: "Focuses on APIs and models. Jumps into any part of the codebase that needs attention — from UI tweaks to backend fixes.",
+    description: "Focuses on API developments, models, and database migrations. Jumps into any part of the codebase that needs attention — from UI tweaks to backend fixes to wiring up APIs.",
   },
   {
     name: "Devan Lubianto",
     nim: "1119016",
-    description: " ",
+    description: "Was unable to participate fully in the development due to significant family health emergencies, including the passing of a close family member. As a team, we agreed to accommodate the situation with understanding. While their direct contributions were limited, their willingness to support the group in any way possible is appreciated.",
   },
 ];
 
