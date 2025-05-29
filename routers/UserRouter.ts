@@ -47,6 +47,37 @@ userRouter.put("/me", authorizationMiddleware, async (req: Request, res: Respons
   }
 });
 
+userRouter.put("/me/password", authorizationMiddleware, async (req: Request, res: Response) => {
+  try {
+    const userId = res.locals.user.id;
+
+    const dbUser = await User.findByPk(userId, {
+      attributes: ['id', 'email', 'password'], // 👈 must include password
+    });
+
+    const { oldPassword, newPassword } = req.body;
+
+    if (typeof oldPassword !== "string" || typeof newPassword !== "string") {
+      res.status(400).json({ error: "Invalid input data" });
+      return;
+    }
+
+    const isMatch = dbUser?.password === oldPassword;
+    if (!isMatch) {
+      res.status(401).json({ error: "Old password is incorrect" });
+      return;
+    }
+
+    dbUser.password = newPassword;
+    await dbUser.save();
+
+    res.json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("PUT /me/password error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 userRouter.delete("/me", authorizationMiddleware, async (req: Request, res: Response) => {
   try {
     const dbUser = res.locals.user as User;
