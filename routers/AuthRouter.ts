@@ -54,7 +54,6 @@ authRouter.post("/signin", async (req, res) => {
         appConfig.jwtSecret,
         { expiresIn: appConfig.jwtExpiry }
       );
-      console.log("User signed in:", user.email);
       res.status(200).json({ message: "Login successful", token });
     }
   } catch (error) {

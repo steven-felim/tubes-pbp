@@ -16,7 +16,6 @@ const ChangePassword = () => {
 
     try {
       const token = localStorage.getItem("token");
-      console.log("Token:", token);
       const res = await fetch("http://localhost:3000/api/me/password", {
         method: "PUT",
         headers: {

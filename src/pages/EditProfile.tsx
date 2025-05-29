@@ -54,7 +54,6 @@ const EditProfile = () => {
         });
 
         const data = await res.json();
-        console.log("Fetched user data:", data);
 
         if (res.ok) {
           setName(data.name || "");

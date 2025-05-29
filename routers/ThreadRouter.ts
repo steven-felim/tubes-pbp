@@ -109,7 +109,7 @@ threadRouter.post("/", authorizationMiddleware, async (req, res) => {
  
 threadRouter.put("/:id", authorizationMiddleware, async (req, res) => {
   const { id } = req.params;
-  const { content } = req.body;
+  const { title, content } = req.body;
 
   try {
     const thread = await Thread.findByPk(id);
@@ -118,7 +118,7 @@ threadRouter.put("/:id", authorizationMiddleware, async (req, res) => {
       return;
     }
 
-    await thread.update({ content });
+    await thread.update({ title, content });
     res.status(200).json(thread);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
