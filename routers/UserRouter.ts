@@ -82,14 +82,15 @@ userRouter.put("/me/password", authorizationMiddleware, async (req: Request, res
 userRouter.delete("/me", authorizationMiddleware, async (req: Request, res: Response) => {
   try {
     const dbUser = res.locals.user as User;
-
     await dbUser.destroy();
+    res.clearCookie("token");
     res.status(204).send();
   } catch (error) {
     console.error("DELETE /me error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 userRouter.get("/:id", async (req: Request, res: Response) => {
   try {
