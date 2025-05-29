@@ -18,8 +18,8 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/about" element={<About />} />
-        <Route path="/user/:userId" element={<Profile />} />
         <Route path="/me" element={<Profile />} />
+        <Route path="/user/:userId" element={<Profile />} />
         <Route path="/me/edit" element={<EditProfile />} />
         <Route path="/me/password" element={<ChangePassword />} />
         <Route path="/threads" element={<Threads />} />

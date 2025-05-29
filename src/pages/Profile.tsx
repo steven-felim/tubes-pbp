@@ -24,16 +24,17 @@ type User = {
 };
 
 const Profile = () => {
-  const { userId } = useParams<{ userId: string }>();
+  const { userId: paramUserId } = useParams<{ userId?: string }>();
   const [viewedUser, setViewedUser] = useState<User | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!localStorage.getItem("token"));
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch current logged-in user
     const fetchCurrentUser = async () => {
       const token = localStorage.getItem("token");
+      setIsLoggedIn(!!token);
       if (!token) return;
       const res = await fetch("http://localhost:3000/api/me", {
         headers: { Authorization: `Bearer ${token}` },
@@ -48,24 +49,36 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    // Fetch the profile user being viewed
-    const fetchUser = async () => {
+    const fetchProfileUser = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/${userId}`);
+        const token = localStorage.getItem("token");
+        const headers: HeadersInit = {};
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const endpoint = paramUserId ? `http://localhost:3000/api/${paramUserId}` : `http://localhost:3000/api/me`;
+
+        const res = await fetch(endpoint, { headers });
         if (!res.ok) throw new Error("User not found");
         const data = await res.json();
         setViewedUser(data);
+
+        if (!paramUserId) {
+          setCurrentUser(data);
+        }
+
       } catch (err) {
         console.error("Error fetching user profile:", err);
         setError("User not found or an error occurred.");
       }
     };
 
-    if (userId) fetchUser();
-  }, [userId]);
+    fetchProfileUser();
+  }, [paramUserId]);
 
-  const isCurrentUser = currentUser && currentUser.id === userId;
-
+  const isCurrentUser = currentUser && viewedUser && currentUser.id === viewedUser.id;
+  
   const handleSignOut = async () => {
     await fetch("http://localhost:3000/api/signout", {
       method: "POST",
@@ -115,14 +128,23 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-gray-800 shadow-md">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link to="/" className="text-white text-xl font-semibold">ForumKode</Link>
+            <div className="flex items-center">
+              <Link to="/" className="text-white text-xl font-semibold">
+                ForumKode
+              </Link>
+            </div>
             <div className="flex space-x-4">
-              <Link to="/ask" className="text-white hover:text-blue-400">Ask</Link>
-              <Link to="/about" className="text-white hover:text-blue-400">About</Link>
-              {currentUser && (
-                <Link to="/me" className="text-white hover:text-blue-400">My Profile</Link>
+              {isLoggedIn && (
+                <Link to="/ask" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Ask Question</Link>
+              )}
+              <Link to="/about" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">About</Link>
+              {isLoggedIn && (
+                <Link to="/me" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">Profile</Link>
+              )}
+              {!isLoggedIn && (
+                <Link to="/SignIn" className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium">SignIn</Link>
               )}
             </div>
           </div>
