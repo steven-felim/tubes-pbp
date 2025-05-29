@@ -231,7 +231,16 @@ const ThreadDetail = () => {
         className="bg-white p-4 rounded-lg shadow-md mt-2"
         style={{ marginLeft: depth * 20 }}
       >
-        <p className="font-semibold text-gray-800">{post.name || "Unknown User"}</p>
+        {post.userId ? (
+          <Link
+            to={`/user/${post.userId}`}
+            className="font-semibold text-blue-600 hover:underline"
+          >
+            {post.name || "Unknown User"}
+          </Link>
+        ) : (
+          <p className="font-semibold text-gray-800">{post.name || "Unknown User"}</p>
+        )}
         <p className="text-sm text-gray-500">
           Posted on {post.createdAt && new Date(post.createdAt).toLocaleDateString()}
           {post.updatedAt && post.createdAt && post.updatedAt !== post.createdAt && (
